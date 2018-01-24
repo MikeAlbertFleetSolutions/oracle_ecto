@@ -21,7 +21,7 @@ defmodule OracleEcto.Mixfile do
 
   defp deps do
     [
-     {:ecto, "~> 2.1.0"},
+     {:ecto, "~> 2.2.0"},
      {:oracleex, path: "/oracleex"}
    ]
   end

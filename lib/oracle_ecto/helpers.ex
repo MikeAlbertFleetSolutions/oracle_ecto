@@ -75,6 +75,7 @@ defmodule OracleEcto.Helpers do
   def ecto_to_db({:array, t}),     do: [ecto_to_db(t), ?[, ?]]
   def ecto_to_db(:id),             do: "number(15)"
   def ecto_to_db(:serial),         do: "number(15)"
+  def ecto_to_db(:bigserial),      do: "number(15)"
   def ecto_to_db(:binary_id),      do: "char(36)"
   def ecto_to_db(:uuid),           do: "char(36)"
   def ecto_to_db(:string),         do: "nvarchar2"

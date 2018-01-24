@@ -83,7 +83,7 @@ defmodule OracleEcto.QueryString do
   end
 
   def update_op(command, _key, _value, _sources, query) do
-    Helpers.error!(query, "Unknown update operation #{inspect command} for Microsoft SQL Server")
+    Helpers.error!(query, "Unknown update operation #{inspect command} for Oracle")
   end
 
   def using_join(%Query{joins: []}, _kind, _prefix, _sources), do: {[], []}
@@ -94,7 +94,7 @@ defmodule OracleEcto.QueryString do
           {join, name} = Helpers.get_source(query, sources, ix, source)
           [join, " " | name]
         %JoinExpr{qual: qual} ->
-          Helpers.error!(query, "Microsoft SQL Server supports only inner joins on #{kind}, got: `#{qual}`")
+          Helpers.error!(query, "Oracle supports only inner joins on #{kind}, got: `#{qual}`")
       end)
 
     wheres =
@@ -203,7 +203,7 @@ defmodule OracleEcto.QueryString do
   def expr({:&, _, [idx, fields, _counter]}, sources, query) do
     {_, name, schema} = elem(sources, idx)
     if is_nil(schema) and is_nil(fields) do
-      Helpers.error!(query, "Microsoft SQL Server requires a schema module when using selector " <>
+      Helpers.error!(query, "Oracle requires a schema module when using selector " <>
         "#{inspect name} but none was given. " <>
         "Please specify a schema or specify exactly which fields from " <>
         "#{inspect name} you desire")
@@ -248,12 +248,12 @@ defmodule OracleEcto.QueryString do
     end
   end
 
-  def expr(%Ecto.SubQuery{query: query, fields: fields}, _sources, _query) do
-    query.select.fields |> put_in(fields) |> Connection.all()
+  def expr(%Ecto.SubQuery{query: query}, _sources, _query) do
+   Connection.all(query)
   end
 
   def expr({:fragment, _, [kw]}, _sources, query) when is_list(kw) or tuple_size(kw) == 3 do
-    Helpers.error!(query, "Microsoft SQL Server adapter does not support keyword or interpolated fragments")
+    Helpers.error!(query, "Oracle adapter does not support keyword or interpolated fragments")
   end
 
   def expr({:fragment, _, parts}, sources, query) do

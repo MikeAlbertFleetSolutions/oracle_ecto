@@ -55,7 +55,7 @@ defmodule OracleEcto.SelectTest do
     query = "posts" |> select([:x]) |> normalize
     assert SQL.all(query) == ~s{SELECT p0."x" FROM "posts" AS p0}
 
-    assert_raise Ecto.QueryError, ~r"Microsoft SQL Server requires a schema module", fn ->
+    assert_raise Ecto.QueryError, ~r"Oracle requires a schema module", fn ->
       SQL.all from(p in "posts", select: p) |> normalize()
     end
   end
