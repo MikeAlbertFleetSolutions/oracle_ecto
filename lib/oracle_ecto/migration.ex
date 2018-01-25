@@ -11,7 +11,7 @@ defmodule OracleEcto.Migration do
     query = [
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
-      "SELECT COUNT(1) INTO v_exists FROM ALL_TABLES WHERE TABLE_NAME = '#{table.name}'; ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_TABLES WHERE TABLE_NAME = '#{upcase_name(table.name)}'; ",
       "IF v_exists = 0 THEN ",
         "EXECUTE IMMEDIATE '",
         "CREATE TABLE ",
@@ -24,7 +24,7 @@ defmodule OracleEcto.Migration do
 
     #
     # query = [if_do(command == :create_if_not_exists,
-    #          "SELECT COUNT(1) FROM ALL_TABLES WHERE OWNER = 'm_e_int_test' AND TABLE_NAME = '#{table.name}' "),
+    #          "SELECT COUNT(1) FROM ALL_TABLES WHERE OWNER = '#{upcase_name(table.prefix)}' AND TABLE_NAME = '#{upcase_name(table.name)}' "),
     #          "CREATE TABLE ",
     #          quote_table(table.prefix, table.name), ?\s, ?(,
     #          column_definitions(table, columns), pk_definition(columns, ", ", table), ?),
@@ -46,7 +46,7 @@ defmodule OracleEcto.Migration do
     query = [[
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
-      "SELECT COUNT(1) INTO v_exists FROM ALL_TABLES WHERE TABLE_NAME = '#{table.name}'; ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_TABLES WHERE TABLE_NAME = '#{upcase_name(table.name)}'; ",
       "IF v_exists = 0 THEN ",
         "EXECUTE IMMEDIATE '",
         execute_ddl({:drop, table}),
@@ -80,7 +80,7 @@ defmodule OracleEcto.Migration do
     query = [[
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
-      "SELECT COUNT(1) INTO v_exists FROM ALL_INDEXES WHERE INDEX_NAME = '#{index.name}' AND TABLE_NAME = '#{index.table}'; ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_INDEXES WHERE INDEX_NAME = '#{upcase_name(index.name)}' AND TABLE_NAME = '#{upcase_name(index.table)}'; ",
       "IF v_exists = 0 THEN ",
         "EXECUTE IMMEDIATE '",
         execute_ddl({:create, index}),
@@ -99,7 +99,7 @@ defmodule OracleEcto.Migration do
     query = [[
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
-      "SELECT COUNT(1) INTO v_exists FROM ALL_INDEXES WHERE INDEX_NAME = '#{index.name}' AND TABLE_NAME = '#{index.table}'; ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_INDEXES WHERE INDEX_NAME = '#{upcase_name(index.name)}' AND TABLE_NAME = '#{upcase_name(index.table)}'; ",
       "IF v_exists = 0 THEN ",
         "EXECUTE IMMEDIATE '",
         execute_ddl({:drop, index}),

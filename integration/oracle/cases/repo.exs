@@ -1063,8 +1063,9 @@ defmodule Ecto.Integration.RepoTest do
     inserted_at = ~N[2016-01-01 09:00:00.000000]
     TestRepo.insert!(%Post{id: 1, title: "title1", inserted_at: inserted_at, public: 0})
 
-    result = Ecto.Adapters.SQL.query!(TestRepo, "SELECT * FROM \"WEB_CA\".\"posts\"", [])
-    posts = Enum.map(result.rows, &TestRepo.load(Post, {result.columns, &1}))
+    result = Ecto.Adapters.SQL.query!(TestRepo, "SELECT * FROM \"POSTS\"", [])
+    columns = Enum.map(result.columns, &String.downcase(&1))
+    posts = Enum.map(result.rows, &TestRepo.load(Post, {columns, &1}))
     assert [%Post{title: "title1", inserted_at: ^inserted_at, public: 0}] = posts
   end
 

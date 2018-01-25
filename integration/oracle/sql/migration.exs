@@ -36,7 +36,7 @@ defmodule Ecto.Integration.MigrationTest do
         add :to_be_added, :integer
       end
 
-      execute "INSERT INTO \"add_col_migration\" (\"id\", \"value\", \"to_be_added\") VALUES (1, 1, 2)"
+      execute "INSERT INTO \"ADD_COL_MIGRATION\" (\"ID\", \"VALUE\", \"TO_BE_ADDED\") VALUES (1, 1, 2)"
     end
 
     def down do
@@ -64,7 +64,7 @@ defmodule Ecto.Integration.MigrationTest do
         modify :from_no_default_to_default, :integer, default: 0
       end
 
-      execute "INSERT INTO \"alter_col_migration\" (\"from_null_to_not_null\") VALUES ('foo')"
+      execute "INSERT INTO \"ALTER_COL_MIGRATION\" (\"FROM_NULL_TO_NOT_NULL\") VALUES ('foo')"
     end
 
     def down do
@@ -86,9 +86,9 @@ defmodule Ecto.Integration.MigrationTest do
         modify :afku_id, references(:alt_fk_usrs, on_delete: :nilify_all)
       end
 
-      execute "INSERT INTO \"alt_fk_usrs\" (\"id\") VALUES (1)"
-      execute "INSERT INTO \"alt_fk_psts\" (\"afku_id\") VALUES (1)"
-      execute "DELETE FROM alt_fk_usrs"
+      execute "INSERT INTO \"ALT_FK_USRS\" (\"ID\") VALUES (1)"
+      execute "INSERT INTO \"ALT_FK_PSTS\" (\"AFKU_ID\") VALUES (1)"
+      execute "DELETE FROM ALT_FK_USRS"
     end
 
     def down do
@@ -111,9 +111,9 @@ defmodule Ecto.Integration.MigrationTest do
         modify :alt_fk_usr_id, references(:alt_fk_usrs, on_update: :update_all)
       end
 
-      execute "INSERT INTO \"alt_fk_usrs\" (\"id\") VALUES ('1')"
-      execute "INSERT INTO \"alt_fk_psts\" (\"id\", \"alt_fk_usr_id\") VALUES ('1', '1')"
-      execute "UPDATE alt_fk_usrs SET id = '2'"
+      execute "INSERT INTO \"ALT_FK_USRS\" (\"ID\") VALUES ('1')"
+      execute "INSERT INTO \"ALT_FK_PSTS\" (\"ID\", \"ALT_FK_USR_ID\") VALUES ('1', '1')"
+      execute "UPDATE \"ALT_FK_USRS\" SET \"ID\" = '2'"
     end
 
     def down do
@@ -131,7 +131,7 @@ defmodule Ecto.Integration.MigrationTest do
         add :to_be_removed, :integer
       end
 
-      execute "INSERT INTO \"drop_col_migration\" (\"id\", \"value\", \"to_be_removed\") VALUES (1, 1, 2)"
+      execute "INSERT INTO \"DROP_COL_MIGRATION\" (\"ID\", \"VALUE\", \"TO_BE_REMOVED\") VALUES (1, 1, 2)"
 
       alter table(:drop_col_migration) do
         remove :to_be_removed
@@ -153,7 +153,7 @@ defmodule Ecto.Integration.MigrationTest do
 
       rename table(:rename_col_migration), :to_be_renamed, to: :was_renamed
 
-      execute "INSERT INTO rename_col_migration (was_renamed) VALUES (1)"
+      execute "INSERT INTO \"RENAME_COL_MIGRATION\" (\"WAS_RENAMED\") VALUES (1)"
     end
 
     def down do
@@ -325,10 +325,10 @@ defmodule Ecto.Integration.MigrationTest do
     parent1 = PoolRepo.insert! Ecto.put_meta(%Parent{id: 1}, source: "parent1")
     parent2 = PoolRepo.insert! Ecto.put_meta(%Parent{id: 2}, source: "parent2")
 
-    writer = "INSERT INTO \"WEB_CA\".\"ref_migration\" (\"id\", \"parent1\", \"parent2\") VALUES (1, #{parent1.id}, #{parent2.id})"
+    writer = "INSERT INTO \"REF_MIGRATION\" (\"ID\", \"PARENT1\", \"PARENT2\") VALUES (1, #{parent1.id}, #{parent2.id})"
     PoolRepo.query!(writer)
 
-    reader = from r in "ref_migration", select: {r.parent1, r.parent2}
+    reader = from r in "REF_MIGRATION", select: {r.parent1, r.parent2}
     assert PoolRepo.all(reader) == [{parent1.id, parent2.id}]
 
     PoolRepo.delete!(parent1)
@@ -363,7 +363,7 @@ defmodule Ecto.Integration.MigrationTest do
   @tag :add_column
   test "add column" do
     assert :ok == up(PoolRepo, 20070906120000, AddColumnMigration, log: false)
-    assert [2] == PoolRepo.all from p in "add_col_migration", select: p.to_be_added
+    assert [2] == PoolRepo.all from p in "ADD_COL_MIGRATION", select: p.to_be_added
     :ok = down(PoolRepo, 20070906120000, AddColumnMigration, log: false)
   end
 
@@ -372,15 +372,15 @@ defmodule Ecto.Integration.MigrationTest do
     assert :ok == up(PoolRepo, 20080906120000, AlterColumnMigration, log: false)
 
     assert ["foo"] ==
-           PoolRepo.all from p in "alter_col_migration", select: p.from_null_to_not_null
+           PoolRepo.all from p in "ALTER_COL_MIGRATION", select: p.from_null_to_not_null
     assert [nil] ==
-           PoolRepo.all from p in "alter_col_migration", select: p.from_not_null_to_null
+           PoolRepo.all from p in "ALTER_COL_MIGRATION", select: p.from_not_null_to_null
     assert [nil] ==
-           PoolRepo.all from p in "alter_col_migration", select: p.from_default_to_no_default
+           PoolRepo.all from p in "ALTER_COL_MIGRATION", select: p.from_default_to_no_default
     assert [0] ==
-           PoolRepo.all from p in "alter_col_migration", select: p.from_no_default_to_default
+           PoolRepo.all from p in "ALTER_COL_MIGRATION", select: p.from_no_default_to_default
 
-    query = "INSERT INTO alter_col_migration (from_not_null_to_null) VALUES ('foo')"
+    query = "INSERT INTO \"ALTER_COL_MIGRATION\" (\"FROM_NOT_NULL_TO_NULL\") VALUES ('foo')"
     assert catch_error(PoolRepo.query!(query))
 
     :ok = down(PoolRepo, 20080906120000, AlterColumnMigration, log: false)
@@ -389,28 +389,28 @@ defmodule Ecto.Integration.MigrationTest do
   @tag :modify_foreign_key_on_delete
   test "modify foreign key's on_delete constraint" do
     assert :ok == up(PoolRepo, 20130802170000, AlterForeignKeyOnDeleteMigration, log: false)
-    assert [nil] == PoolRepo.all from p in "alter_fk_posts", select: p.alter_fk_user_id
+    assert [nil] == PoolRepo.all from p in "ALTER_FK_POSTS", select: p.alter_fk_user_id
     :ok = down(PoolRepo, 20130802170000, AlterForeignKeyOnDeleteMigration, log: false)
   end
 
   @tag :modify_foreign_key_on_update
   test "modify foreign key's on_update constraint" do
     assert :ok == up(PoolRepo, 20130802170000, AlterForeignKeyOnUpdateMigration, log: false)
-    assert [2] == PoolRepo.all from p in "alter_fk_posts", select: p.alter_fk_user_id
+    assert [2] == PoolRepo.all from p in "ALTER_FK_POSTS", select: p.alter_fk_user_id
     :ok = down(PoolRepo, 20130802170000, AlterForeignKeyOnUpdateMigration, log: false)
   end
 
   @tag :remove_column
   test "remove column" do
     assert :ok == up(PoolRepo, 20090906120000, DropColumnMigration, log: false)
-    assert catch_error(PoolRepo.all from p in "drop_col_migration", select: p.to_be_removed)
+    assert catch_error(PoolRepo.all from p in "DROP_COL_MIGRATION", select: p.to_be_removed)
     :ok = down(PoolRepo, 20090906120000, DropColumnMigration, log: false)
   end
 
   @tag :rename_column
   test "rename column" do
     assert :ok == up(PoolRepo, 20150718120000, RenameColumnMigration, log: false)
-    assert [1] == PoolRepo.all from p in "rename_col_migration", select: p.was_renamed
+    assert [1] == PoolRepo.all from p in "RENAME_COL_MIGRATION", select: p.was_renamed
     :ok = down(PoolRepo, 20150718120000, RenameColumnMigration, log: false)
   end
 

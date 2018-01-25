@@ -30,17 +30,17 @@ defmodule Ecto.Integration.SQLTest do
   test "to_sql/3" do
     {sql, []} = Ecto.Adapters.SQL.to_sql(:all, TestRepo, Barebone)
     assert sql =~ "SELECT"
-    assert sql =~ "barebones"
+    assert sql =~ "BAREBONES"
 
     {sql, [0]} = Ecto.Adapters.SQL.to_sql(:update_all, TestRepo,
                                           from(b in Barebone, update: [set: [num: ^0]]))
     assert sql =~ "UPDATE"
-    assert sql =~ "barebones"
+    assert sql =~ "BAREBONES"
     assert sql =~ "SET"
 
     {sql, []} = Ecto.Adapters.SQL.to_sql(:delete_all, TestRepo, Barebone)
     assert sql =~ "DELETE"
-    assert sql =~ "barebones"
+    assert sql =~ "BAREBONES"
   end
 
   test "Repo.insert! escape" do

@@ -12,6 +12,13 @@ defmodule OracleEcto.Helpers do
     [source, ?. | quote_name(name)]
   end
 
+  def upcase_name(name) when is_atom(name) do
+    upcase_name(Atom.to_string(name))
+  end
+  def upcase_name(name) do
+    String.upcase(name)
+  end
+
   def quote_name(name, quoter \\ ?")
   def quote_name(nil, _), do: []
   def quote_name(names, quoter) when is_list(names) do
@@ -21,13 +28,17 @@ defmodule OracleEcto.Helpers do
     |> wrap_in(quoter)
   end
   def quote_name(name, quoter) when is_atom(name) do
-    quote_name(Atom.to_string(name), quoter)
+    name
+    |> upcase_name()
+    |> wrap_in(quoter)
   end
   def quote_name(name, quoter) do
     if String.contains?(name, "\"") do
       error!(nil, "bad name #{inspect name}")
     end
-    wrap_in(name, quoter)
+    name
+    |> upcase_name()
+    |> wrap_in(quoter)
   end
 
   def wrap_in(value, nil), do: value
@@ -38,9 +49,11 @@ defmodule OracleEcto.Helpers do
     [wrapper, value, wrapper]
   end
 
-  def quote_table(prefix, name)
+  # def quote_table(prefix, name)
   def quote_table(nil, name),    do: quote_name(name)
-  def quote_table(prefix, name), do: intersperse_map([prefix, name], ?., &quote_name/1)
+  def quote_table(prefix, name) do
+    intersperse_map([prefix, name], ?., &quote_name/1)
+  end
 
   def single_quote(value), do: value |> escape_string |> wrap_in(?')
 
