@@ -15,6 +15,34 @@ This might require the installation of an additional package depending on how yo
 
 OracleEcto depends on Oracle's ODBC Driver.  See the Dockerfile for how to install.
 
+### Application changes:
+
+You need to add the following dependencies to your application:
+
+```elixir
+def deps do
+  [
+    {:oracle_ecto, github: "MikeAlbertFleetSolutions/oracle_ecto"},
+    {:oracleex, github: "MikeAlbertFleetSolutions/oracleex"}
+ ]
+end
+```
+
+Be sure to run `mix deps.get`
+
+### Configuration
+
+Example configuration:
+
+```elixir
+config :my_app, MyApp.Repo,
+  adapter: OracleEcto,
+  dsn: "OracleODBC-12c",
+  service: "db",
+  username: "jeff",
+  password: "password1"
+```
+
 ## Testing
 
 Tests require an instance of Oracle to be running on `localhost` and the appropriate environment
@@ -38,3 +66,11 @@ docker-compose run oracle_ecto
 mix deps.get
 mix test
 ```
+
+
+## Notes
+
+* I started down this project because we have a very large existing Oracle database that our apps need to leverage.  I tried to implement so this would be reusable by others regardless of their situation but sometimes fell back to just making it work for our use case in order to save time.
+* As of Oracle 12c, there is a concept of Identity Columns but no good 'Returning' functionality so the tests had to be changed to provide IDs.
+* I struggle with Ecto's prefix for the schema_migration table so now I just assume no prefix.
+* Oracle is case sensitive when you quote names so now I force everything to uppercase (back to point #1, that was the naming convention already in place).

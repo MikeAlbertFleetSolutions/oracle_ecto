@@ -45,7 +45,10 @@ alias Ecto.Integration.TestRepo
 
 Application.put_env(:ecto, TestRepo,
   adapter: OracleEcto,
-  database: "web_ca",
+  dsn: "OracleODBC-12c",
+  service: "db",
+  username: "web_ca",
+  password: "bitsandbobs",
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_pool: pool)
 
@@ -58,8 +61,10 @@ alias Ecto.Integration.PoolRepo
 
 Application.put_env(:ecto, PoolRepo,
   adapter: OracleEcto,
-  pool: pool,
-  database: "web_ca",
+  dsn: "OracleODBC-12c",
+  service: "db",
+  username: "web_ca",
+  password: "bitsandbobs",
   pool_size: 10,
   max_restarts: 20,
   max_seconds: 10)

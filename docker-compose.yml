@@ -10,10 +10,5 @@ services:
     volumes:
       - ${WORKSPACE}/oracle_ecto/:/app
       - ${WORKSPACE}/oracleex/:/oracleex
-    environment:
-      - ORACLE_DSN=OracleODBC-12c
-      - ORACLE_SERVICE=db
-      - ORACLE_USR=web_ca
-      - ORACLE_PWD=bitsandbobs
     depends_on:
       - db

@@ -11,7 +11,6 @@ defmodule OracleEcto.Mixfile do
       start_permanent: Mix.env == :prod,
       deps: deps(),
       test_paths: ["integration/oracle"]
-#      test_paths: ["integration/oracle", "test"]
    ]
   end
 
@@ -22,7 +21,7 @@ defmodule OracleEcto.Mixfile do
   defp deps do
     [
      {:ecto, "~> 2.2.0"},
-     {:oracleex, path: "/oracleex"}
+     {:oracleex, github: "MikeAlbertFleetSolutions/oracleex"}
    ]
   end
 end
