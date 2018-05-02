@@ -155,7 +155,7 @@ defmodule OracleEcto.QueryString do
   end
 
   def offset(%Query{offset: nil, limit: nil}, _sources), do: []
-  def offset(%Query{offset: nil, limit: %QueryExpr{expr: expr}} = query, sources) do
+  def offset(%Query{offset: nil, limit: %QueryExpr{expr: _expr}} = _query, _sources) do
     []
   end
   def offset(%Query{offset: %QueryExpr{expr: offset_expr}, limit: %QueryExpr{expr: limit_expr}} = query, sources) do
