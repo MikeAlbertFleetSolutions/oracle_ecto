@@ -91,13 +91,24 @@ end
 
 {:ok, _} = OracleEcto.ensure_all_started(TestRepo, :temporary)
 
-# Load up the repository, start it, and run migrations
+# load up the repository, start it
 _   = OracleEcto.storage_down(TestRepo.config())
 :ok = OracleEcto.storage_up(TestRepo.config())
 
 {:ok, _pid} = TestRepo.start_link
 {:ok, _pid} = PoolRepo.start_link
 
+# since oracle doesn't support transactions in DDL, wipe out all tables in the db between runs
+TestRepo.query!("
+  BEGIN
+    FOR c IN (SELECT table_name FROM user_tables)
+    LOOP
+      EXECUTE IMMEDIATE ('drop table ' || c.table_name || ' cascade constraints');
+    END LOOP;
+  END;
+")
+
+# run migrations
 :ok = Ecto.Migrator.up(TestRepo, 0, Ecto.Integration.Migration, log: false)
 Ecto.Adapters.SQL.Sandbox.mode(TestRepo, :manual)
 Process.flag(:trap_exit, true)
