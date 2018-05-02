@@ -1,7 +1,7 @@
 version: '2'
 services:
   db:
-    image: mafs/oracledb:12.1.0.2-ee-webca
+    image: mafs/oracledb:web_ca-db
     ports:
       - 1521:1521
 
