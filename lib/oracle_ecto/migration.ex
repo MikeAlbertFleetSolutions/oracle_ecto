@@ -109,10 +109,10 @@ defmodule OracleEcto.Migration do
     query
   end
 
-  def execute_ddl({:rename, %Table{} = current_table, %Table{} = new_table}),
+  def execute_ddl({:rename, %Table{} = _current_table, %Table{} = _new_table}),
     do: error!(nil, "Oracle adapter does not support table rename")
 
-  def execute_ddl({:rename, %Table{} = table, current_column, new_column}),
+  def execute_ddl({:rename, %Table{} = _table, _current_column, _new_column}),
     do: error!(nil, "Oracle adapter does not support table rename")
 
   def execute_ddl({:create, %Constraint{} = constraint}) do
@@ -245,7 +245,7 @@ defmodule OracleEcto.Migration do
     [?", Enum.intersperse(sections, ?_), ?"]
   end
 
-  defp default_expr({:ok, _} = default, type, table, name),
+  defp default_expr({:ok, _} = default, type, _table, _name),
     do: default_expr(default, type)
   defp default_expr(:error, _, _, _),
     do: []

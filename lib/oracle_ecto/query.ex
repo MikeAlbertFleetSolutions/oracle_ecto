@@ -117,7 +117,7 @@ defmodule OracleEcto.Query do
   """
   @spec update(prefix :: String.t, table :: String.t, fields :: [atom],
                    filters :: [atom], returning :: [atom]) :: String.t
-  def update(prefix, table, fields, filters, returning) do
+  def update(prefix, table, fields, filters, _returning) do
     {fields, count} = intersperse_reduce(fields, ", ", 1, fn field, acc ->
       {[quote_name(field), " = ?" | Integer.to_string(acc)], acc + 1}
     end)
@@ -135,7 +135,7 @@ defmodule OracleEcto.Query do
   """
   @spec delete(prefix :: String.t, table :: String.t,
                    filters :: [atom], returning :: [atom]) :: String.t
-  def delete(prefix, table, filters, returning) do
+  def delete(prefix, table, filters, _returning) do
     {filters, _} = intersperse_reduce(filters, " AND ", 1, fn field, acc ->
       {[quote_name(field), " = ?" , Integer.to_string(acc)], acc + 1}
     end)
