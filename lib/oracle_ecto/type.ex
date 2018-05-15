@@ -52,7 +52,7 @@ defmodule OracleEcto.Type do
 
   def decode({date, {h, m, s}}, type)
   when type in [:utc_datetime, :naive_datetime] do
-    {:ok, {date, {h, m, s}}}
+    {:ok, {date, {h, m, s, 0}}}
   end
 
   def decode(value, type)
