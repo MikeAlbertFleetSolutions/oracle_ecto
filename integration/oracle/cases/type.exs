@@ -14,9 +14,10 @@ defmodule Ecto.Integration.TypeTest do
     text     = <<0,1>>
     uuid     = "00010203-0405-0607-0809-0a0b0c0d0e0f"
     datetime = ~N[2014-01-16 20:26:51.000000]
+    date     = ~D[2014-01-16]
 
     TestRepo.insert!(%Post{id: 1, text: text, public: 1, visits: integer, uuid: uuid,
-                           counter: integer, inserted_at: datetime, intensity: float})
+                           counter: integer, inserted_at: datetime, intensity: float, posted: date})
 
     # nil
     assert [nil] = TestRepo.all(from Post, select: nil)
@@ -48,6 +49,9 @@ defmodule Ecto.Integration.TypeTest do
     datetime = System.system_time(:seconds) * 1_000_000 |> DateTime.from_unix!(:microseconds)
     TestRepo.insert!(%User{id: 1, inserted_at: datetime})
     assert [^datetime] = TestRepo.all(from u in User, where: u.inserted_at == ^datetime, select: u.inserted_at)
+
+    # Date
+    assert [^date] = TestRepo.all(from p in Post, where: p.posted == ^date, select: p.posted)
   end
 
   test "aggregated types" do

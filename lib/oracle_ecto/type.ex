@@ -55,9 +55,9 @@ defmodule OracleEcto.Type do
     {:ok, {date, {h, m, s, 0}}}
   end
 
-  def decode(value, type)
-  when type in [:date] and is_binary(value) do
-    Ecto.Date.cast!(value) |> Ecto.Date.dump
+  def decode({date, {_h, _m, _s}}, type)
+  when type in [:date] do
+    {:ok, date}
   end
 
   def decode(value, _type) do
