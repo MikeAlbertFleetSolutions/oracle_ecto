@@ -7,10 +7,8 @@ defmodule Ecto.Integration.AssocTest do
   alias Ecto.Integration.TestRepo
   import Ecto.Query
 
-  alias Ecto.Integration.Custom
   alias Ecto.Integration.Post
   alias Ecto.Integration.User
-  alias Ecto.Integration.PostUser
   alias Ecto.Integration.Comment
   alias Ecto.Integration.Permalink
 
@@ -432,7 +430,7 @@ defmodule Ecto.Integration.AssocTest do
 
     author = TestRepo.preload author, [:posts]
     posts_params = Enum.map author.posts, fn %Post{uuid: u} ->
-      %{"uuid": u, "title": "fresh"}
+      %{uuid: u, title: "fresh"}
     end
 
     # This will only work if we delete before performing inserts

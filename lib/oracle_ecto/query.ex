@@ -62,7 +62,7 @@ defmodule OracleEcto.Query do
   @spec insert(prefix ::String.t, table :: String.t,
                    header :: [atom], rows :: [[atom | nil]],
                    on_conflict :: Ecto.Adapter.on_conflict, returning :: [atom]) :: String.t
-  def insert(prefix, table, header, rows, on_conflict, returning) do
+  def insert(prefix, table, header, rows, on_conflict, _returning) do
     included_fields = header
     |> Enum.filter(fn value -> Enum.any?(rows, fn row -> value in row end) end)
 
@@ -72,11 +72,10 @@ defmodule OracleEcto.Query do
       included_rows =
         Enum.map(rows, fn row ->
           row
-          |> Enum.zip(header)
-          |> Enum.filter_map(
-          fn {_row, col} -> col in included_fields end,
-          fn {row, _col} -> row end)
-      end)
+         |> Enum.zip(header)
+          |> Enum.filter(fn {_row, col} -> col in included_fields end)
+          |> Enum.map(fn {row, _col} -> row end)
+        end)
 
       fields = intersperse_map(included_fields, ?,, &quote_name/1)
       IO.iodata_to_binary(["INSERT INTO ", quote_table(prefix, table),

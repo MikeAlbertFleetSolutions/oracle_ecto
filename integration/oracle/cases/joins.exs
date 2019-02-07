@@ -9,7 +9,6 @@ defmodule Ecto.Integration.JoinsTest do
   alias Ecto.Integration.Comment
   alias Ecto.Integration.Permalink
   alias Ecto.Integration.User
-  alias Ecto.Integration.PostUserCompositePk
 
   @tag :update_with_join
   test "update all with joins" do

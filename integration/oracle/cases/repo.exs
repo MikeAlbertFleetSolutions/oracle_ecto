@@ -12,10 +12,8 @@ defmodule Ecto.Integration.RepoTest do
   alias Ecto.Integration.Comment
   alias Ecto.Integration.Permalink
   alias Ecto.Integration.Custom
-  alias Ecto.Integration.Barebone
   alias Ecto.Integration.CompositePk
   alias Ecto.Integration.PostUsecTimestamps
-  alias Ecto.Integration.PostUserCompositePk
 
   test "returns already started for started repos" do
     assert {:error, {:already_started, _}} = TestRepo.start_link
@@ -33,7 +31,7 @@ defmodule Ecto.Integration.RepoTest do
     assert []  = TestRepo.all from p in Post, where: p.title in ["1", "2", "3"]
     assert []  = TestRepo.all from p in Post, where: p.title in ^[]
 
-    assert [_] = TestRepo.all from p in Post, where: not p.title in []
+    assert [_] = TestRepo.all from p in Post, where: p.title not in []
     assert [_] = TestRepo.all from p in Post, where: p.title in ["1", "hello", "3"]
     assert [_] = TestRepo.all from p in Post, where: p.title in ["1", ^"hello", "3"]
     assert [_] = TestRepo.all from p in Post, where: p.title in ^["1", "hello", "3"]
@@ -220,7 +218,7 @@ defmodule Ecto.Integration.RepoTest do
   end
 
   test "insert and fetch a schema with utc timestamps" do
-    datetime = System.system_time(:seconds) * 1_000_000 |> DateTime.from_unix!(:microseconds)
+    datetime = System.system_time(:second) * 1_000_000 |> DateTime.from_unix!(:microsecond)
     TestRepo.insert!(%User{id: 1, inserted_at: datetime})
     assert [%{inserted_at: ^datetime}] = TestRepo.all(User)
   end
