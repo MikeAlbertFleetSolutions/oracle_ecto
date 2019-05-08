@@ -10,6 +10,10 @@ defmodule OracleEcto.Type do
     Ecto.UUID.load(value)
   end
 
+  def encode(value, :map) do
+    Poison.encode(value)
+  end
+
   def encode(value, :decimal) do
     try do
       value
@@ -44,6 +48,10 @@ defmodule OracleEcto.Type do
   def decode(value, type)
   when type in @decimal_types and is_binary(value) do
     Decimal.parse(value)
+  end
+
+  def decode(value, :map) do
+    Poison.decode(value)
   end
 
   def decode(value, :uuid) do

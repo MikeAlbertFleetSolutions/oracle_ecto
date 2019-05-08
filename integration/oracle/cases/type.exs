@@ -130,10 +130,9 @@ defmodule Ecto.Integration.TypeTest do
     assert tag.ints == [1, nil, 3]
   end
 
-  @tag :map_type
   test "untyped map" do
-    post1 = TestRepo.insert!(%Post{meta: %{"foo" => "bar", "baz" => "bat"}})
-    post2 = TestRepo.insert!(%Post{meta: %{foo: "bar", baz: "bat"}})
+    post1 = TestRepo.insert!(%Post{id: 1, meta: %{"foo" => "bar", "baz" => "bat"}})
+    post2 = TestRepo.insert!(%Post{id: 2, meta: %{foo: "bar", baz: "bat"}})
 
     assert TestRepo.all(from p in Post, where: p.id == ^post1.id, select: p.meta) ==
            [%{"foo" => "bar", "baz" => "bat"}]
@@ -143,8 +142,8 @@ defmodule Ecto.Integration.TypeTest do
 
   @tag :map_type
   test "typed map" do
-    post1 = TestRepo.insert!(%Post{links: %{"foo" => "http://foo.com", "bar" => "http://bar.com"}})
-    post2 = TestRepo.insert!(%Post{links: %{foo: "http://foo.com", bar: "http://bar.com"}})
+    post1 = TestRepo.insert!(%Post{id: 1, links: %{"foo" => "http://foo.com", "bar" => "http://bar.com"}})
+    post2 = TestRepo.insert!(%Post{id: 2, links: %{foo: "http://foo.com", bar: "http://bar.com"}})
 
     assert TestRepo.all(from p in Post, where: p.id == ^post1.id, select: p.links) ==
            [%{"foo" => "http://foo.com", "bar" => "http://bar.com"}]
@@ -152,9 +151,8 @@ defmodule Ecto.Integration.TypeTest do
            [%{"foo" => "http://foo.com", "bar" => "http://bar.com"}]
   end
 
-  @tag :map_type
   test "map type on update" do
-    post = TestRepo.insert!(%Post{meta: %{"world" => "hello"}})
+    post = TestRepo.insert!(%Post{id: 1, meta: %{"world" => "hello"}})
     assert TestRepo.get!(Post, post.id).meta == %{"world" => "hello"}
 
     post = TestRepo.update!(Ecto.Changeset.change post, meta: %{hello: "world"})
