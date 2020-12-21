@@ -45,7 +45,7 @@ alias Ecto.Integration.TestRepo
 
 Application.put_env(:ecto, TestRepo,
   adapter: OracleEcto,
-  dsn: "OracleODBC-12c",
+  dsn: "OracleODBC-19",
   service: "db",
   username: "web_ca",
   password: "bitsandbobs",
@@ -61,7 +61,7 @@ alias Ecto.Integration.PoolRepo
 
 Application.put_env(:ecto, PoolRepo,
   adapter: OracleEcto,
-  dsn: "OracleODBC-12c",
+  dsn: "OracleODBC-19",
   service: "db",
   username: "web_ca",
   password: "bitsandbobs",

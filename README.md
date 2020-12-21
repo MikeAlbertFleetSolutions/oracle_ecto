@@ -67,6 +67,26 @@ mix deps.get
 mix test
 ```
 
+## Testing against 19c
+
+### To start the database:
+
+```bash
+docker-compose -f docker-compose.19c.yml up db
+```
+
+### To open a shell at the app root:
+
+```bash
+docker-compose -f docker-compose.19c.yml run oracle_ecto
+```
+
+### To run the unit tests:
+
+```bash
+mix deps.get
+mix test
+```
 
 ## Notes
 
