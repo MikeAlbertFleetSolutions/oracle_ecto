@@ -1,7 +1,16 @@
-FROM elixir:latest
+FROM elixir:1.10.3
 
 # set Locale to en_US.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
+ENV ERLANG_VER=1:21.3.8.14-1
+
+RUN echo "deb https://packages.erlang-solutions.com/ubuntu bionic contrib" > /etc/apt/sources.list.d/erlang-solutions.list
+RUN wget https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc
+RUN apt-key add erlang_solutions.asc
+
+RUN apt-get update && apt-get install -y locales unzip vim unixodbc-dev libaio1 \
+    erlang-base=$ERLANG_VER \
+    erlang-odbc=$ERLANG_VER
 
 RUN apt-get update && apt-get install -y locales unzip vim unixodbc-dev libaio1
 
@@ -38,6 +47,7 @@ ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2
 ENV TNS_ADMIN=/opt/oracle/instantclient_12_2
 
 WORKDIR /opt/oracle/instantclient_12_2
+COPY odbcinst.ini /etc/odbcinst.ini
 RUN /opt/oracle/instantclient_12_2/odbc_update_ini.sh /
 
 
