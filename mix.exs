@@ -20,8 +20,8 @@ defmodule OracleEcto.Mixfile do
 
   defp deps do
     [
-     {:ecto, "~> 2.2.0"},
-     {:oracleex, github: "MikeAlbertFleetSolutions/oracleex"},
+     {:ecto_sql, "~> 3.1.0"},
+     {:oracleex, github: "MikeAlbertFleetSolutions/oracleex", branch: "upgrade/oracle-19c"},
      {:poison, "~> 3.1"}
    ]
   end

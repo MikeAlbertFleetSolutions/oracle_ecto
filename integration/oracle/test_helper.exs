@@ -53,7 +53,7 @@ Application.put_env(:ecto, TestRepo,
   ownership_pool: pool)
 
 defmodule Ecto.Integration.TestRepo do
-  use Ecto.Integration.Repo, otp_app: :ecto
+  use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto
 end
 
 # Pool repo for transaction and lock tests
@@ -70,7 +70,7 @@ Application.put_env(:ecto, PoolRepo,
   max_seconds: 10)
 
 defmodule Ecto.Integration.PoolRepo do
-  use Ecto.Integration.Repo, otp_app: :ecto
+  use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto
 
   def create_prefix(prefix) do
    "create user #{prefix} identified by #{prefix}"
