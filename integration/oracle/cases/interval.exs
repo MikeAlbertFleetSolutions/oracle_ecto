@@ -7,7 +7,7 @@ defmodule Ecto.Integration.IntervalTest do
   import Ecto.Query
 
   @posted ~D[2014-01-01]
-  @inserted_at ~N[2014-01-01 02:00:00.0]
+  @inserted_at ~N[2014-01-01 02:00:00]
 
   setup do
     TestRepo.insert!(%Post{id: 1, posted: @posted, inserted_at: @inserted_at})

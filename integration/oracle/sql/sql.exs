@@ -8,7 +8,7 @@ defmodule Ecto.Integration.SQLTest do
   import Ecto.Query, only: [from: 2]
 
   test "fragmented types" do
-    datetime = ~N[2014-01-16 20:26:51.000000]
+    datetime = ~N[2014-01-16 20:26:51]
     TestRepo.insert!(%Post{id: 1, inserted_at: datetime})
     query = from p in Post, where: fragment("? >= ?", p.inserted_at, ^datetime), select: p.inserted_at
     assert [^datetime] = TestRepo.all(query)

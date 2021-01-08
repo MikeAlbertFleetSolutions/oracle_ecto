@@ -351,7 +351,7 @@ defmodule OracleEcto.QueryString do
   def create_names(prefix, sources, pos, limit) when pos < limit do
     current =
       case elem(sources, pos) do
-        {table, schema} ->
+        {table, schema, _as_name} ->
           name = [String.first(table) | Integer.to_string(pos)]
           {Helpers.quote_table(prefix, table), name, schema}
         {:fragment, _, _} ->
