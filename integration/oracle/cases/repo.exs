@@ -218,7 +218,7 @@ defmodule Ecto.Integration.RepoTest do
   end
 
   test "insert and fetch a schema with utc timestamps" do
-    datetime = System.system_time(:second) * 1_000_000 |> DateTime.from_unix!(:microsecond)
+    datetime = System.system_time(:second) * 1_000_000 |> DateTime.from_unix!(:microsecond) |> DateTime.truncate(:seconds)
     TestRepo.insert!(%User{id: 1, inserted_at: datetime})
     assert [%{inserted_at: ^datetime}] = TestRepo.all(User)
   end
@@ -815,7 +815,7 @@ defmodule Ecto.Integration.RepoTest do
 
   test "update all with casting and dumping" do
     text = "hai"
-    datetime = ~N[2014-01-16 20:26:51.000000]
+    datetime = ~N[2014-01-16 20:26:51]
     assert %Post{id: id} = TestRepo.insert!(%Post{id: 1})
 
     assert {1, nil} = TestRepo.update_all(Post, set: [text: text, inserted_at: datetime])

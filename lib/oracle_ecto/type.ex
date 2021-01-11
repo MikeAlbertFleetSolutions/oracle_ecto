@@ -25,7 +25,8 @@ defmodule OracleEcto.Type do
     end
   end
 
-  def encode(value, _type) do
+  def encode(value, type) do
+    IO.puts "HERE #{value} #{type}"
     {:ok, value}
   end
 
@@ -56,6 +57,16 @@ defmodule OracleEcto.Type do
 
   def decode(value, :uuid) do
     Ecto.UUID.dump(value)
+  end
+
+  def decode(%NaiveDateTime{} = date_time, type) when type in [:utc_datetime, :naive_datetime] do
+    IO.puts "decode date time"
+    date_time |> NaiveDateTime.to_erl() |> decode(type)
+  end
+
+  def decode(%NaiveDateTime{} = date_time, type) when type in [:date] do
+    IO.puts "decode date"
+    date_time |> NaiveDateTime.to_date() |> Date.to_erl() |> decode(type)
   end
 
   def decode({date, {h, m, s}}, type)

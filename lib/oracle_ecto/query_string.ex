@@ -264,11 +264,13 @@ defmodule OracleEcto.QueryString do
   end
 
   def expr({:datetime_add, _, [datetime, count, interval]}, sources, query) do
+    IO.inspect datetime, label: "datetime"
     ["CAST(DATEADD(", interval, ",", expr(count, sources, query),
-      ",", expr(datetime, sources, query) | ") AS DATETIME2)"]
+      ",", expr(datetime, sources, query) | ") AS DATETIME)"]
   end
 
   def expr({:date_add, _, [date, count, interval]}, sources, query) do
+    IO.inspect date, label: "date"
     ["CAST(DATEADD(", interval, ",", expr(count, sources, query),
       ",", expr(date, sources, query) | ") AS DATE)"]
   end
@@ -351,7 +353,7 @@ defmodule OracleEcto.QueryString do
   def create_names(prefix, sources, pos, limit) when pos < limit do
     current =
       case elem(sources, pos) do
-        {table, schema, _as_name} ->
+        {table, schema, as_name} ->
           name = [String.first(table) | Integer.to_string(pos)]
           {Helpers.quote_table(prefix, table), name, schema}
         {:fragment, _, _} ->

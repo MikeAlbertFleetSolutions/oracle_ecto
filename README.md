@@ -78,7 +78,7 @@ docker-compose -f docker-compose.19c.yml up db
 ### To open a shell at the app root:
 
 ```bash
-docker-compose -f docker-compose.19c.yml run oracle_ecto
+docker-compose -f docker-compose.19c.yml run --rm oracle_ecto
 ```
 
 ### To run the unit tests:

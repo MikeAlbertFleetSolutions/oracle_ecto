@@ -89,6 +89,9 @@ defmodule Ecto.Integration.IntervalTest do
 
   test "datetime_add with year" do
     dec = Decimal.new(1)
+
+    IO.inspect TestRepo.all(from p in Post)
+
     assert [{{2015, 1, 1}, _}] =
            TestRepo.all(from p in Post, select: datetime_add(p.inserted_at, 1, "year"))
     assert [{{2015, 1, 1}, _}] =

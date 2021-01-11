@@ -1,4 +1,6 @@
 defmodule OracleEcto.Connection do
+  @behaviour Ecto.Adapter.SQL.Structure
+
   alias Oracleex.Query
   alias OracleEcto.Query, as: SQL
 
@@ -23,8 +25,12 @@ defmodule OracleEcto.Connection do
   @spec prepare_execute(connection :: DBConnection.t, name :: String.t, prepared, params :: [term], options :: Keyword.t) ::
   {:ok, query :: map, term} | {:error, Exception.t}
   def prepare_execute(conn, name, prepared_query, params, options) do
+    IO.puts "prepare_execute"
     statement = sanitise_query(prepared_query)
     ordered_params = order_params(prepared_query, params)
+
+    IO.inspect statement, label: "statement"
+    IO.inspect ordered_params, label: "ordered_params"
 
     case DBConnection.prepare_execute(conn, %Query{name: name, statement: statement}, ordered_params, options) do
       {:ok, query, result} ->
@@ -47,6 +53,7 @@ defmodule OracleEcto.Connection do
   @spec execute(connection :: DBConnection.t, prepared_query :: cached, params :: [term], options :: Keyword.t) ::
             {:ok, term} | {:error | :reset, Exception.t}
   def execute(conn, %Query{} = query, params, options) do
+    IO.puts "execute"
     ordered_params =
       query.statement
       |> IO.iodata_to_binary
@@ -67,20 +74,21 @@ defmodule OracleEcto.Connection do
     end
   end
   def execute(conn, statement, params, options) do
-    execute(conn, %Query{name: "", statement: statement}, params, options)
+    execute(conn, build_query(statement), params, options)
   end
 
   @spec query(connection :: DBConnection.t, query :: String.t, params :: [term], options :: Keyword.t) ::
   {:ok, term} | {:error, Exception.t}
   def query(conn, query, params, options) do
+    IO.puts "query"
     ordered_params =
       query
       |> IO.iodata_to_binary
       |> order_params(params)
 
-    sanitised_query = sanitise_query(query)
+    query = build_query(query)
 
-    case DBConnection.prepare_execute(conn, %Query{name: "", statement: sanitised_query}, ordered_params, options) do
+    case DBConnection.prepare_execute(conn, query, ordered_params, options) do
       {:ok, _query, result} -> {:ok, process_rows(result, options)}
       {:error, %Oracleex.Error{}} = error ->
         if is_erlang_odbc_no_data_found_bug?(error, query.statement) do
@@ -92,20 +100,20 @@ defmodule OracleEcto.Connection do
     end
   end
 
-  @impl true
+  @spec ddl_logs(result :: term()) :: [
+    {Logger.level(), Logger.message(), Logger.metadata()}
+  ]
   def ddl_logs(_), do: []
 
-  @impl true
-  def explain_query(conn, query, params, opts) do
-    case query(conn, IO.iodata_to_binary(["EXPLAIN PLAN FOR ", query]), params, opts) do
-      {:ok, _result} -> query(conn, "SELECT * FROM table(DBMS_XPLAN.DISPLAY())", params, opts)
-      {:error, err} -> {:error, err}
-    end
-  end
-
-  @impl true
+  @spec table_exists_query(table :: String.t()) :: {iodata(), [term()]}
   def table_exists_query(table) do
     {"SELECT count(*) FROM user_tables WHERE table_name = :1 ", [table]}
+  end
+
+  defp build_query(query_statement, name \\ "") do
+    sanitised_query = sanitise_query(query_statement)
+
+    %Query{name: name, statement: sanitised_query}
   end
 
   defp order_params(query, params) do
