@@ -25,12 +25,9 @@ defmodule OracleEcto.Connection do
   @spec prepare_execute(connection :: DBConnection.t, name :: String.t, prepared, params :: [term], options :: Keyword.t) ::
   {:ok, query :: map, term} | {:error, Exception.t}
   def prepare_execute(conn, name, prepared_query, params, options) do
-    IO.puts "prepare_execute"
+    #IO.puts "prepare_execute"
     statement = sanitise_query(prepared_query)
     ordered_params = order_params(prepared_query, params)
-
-    IO.inspect statement, label: "statement"
-    IO.inspect ordered_params, label: "ordered_params"
 
     case DBConnection.prepare_execute(conn, %Query{name: name, statement: statement}, ordered_params, options) do
       {:ok, query, result} ->
@@ -53,7 +50,7 @@ defmodule OracleEcto.Connection do
   @spec execute(connection :: DBConnection.t, prepared_query :: cached, params :: [term], options :: Keyword.t) ::
             {:ok, term} | {:error | :reset, Exception.t}
   def execute(conn, %Query{} = query, params, options) do
-    IO.puts "execute"
+    #IO.puts "execute"
     ordered_params =
       query.statement
       |> IO.iodata_to_binary
@@ -80,7 +77,7 @@ defmodule OracleEcto.Connection do
   @spec query(connection :: DBConnection.t, query :: String.t, params :: [term], options :: Keyword.t) ::
   {:ok, term} | {:error, Exception.t}
   def query(conn, query, params, options) do
-    IO.puts "query"
+    #IO.puts "query"
     ordered_params =
       query
       |> IO.iodata_to_binary
@@ -112,7 +109,6 @@ defmodule OracleEcto.Connection do
 
   defp build_query(query_statement, name \\ "") do
     sanitised_query = sanitise_query(query_statement)
-
     %Query{name: name, statement: sanitised_query}
   end
 
@@ -132,16 +128,21 @@ defmodule OracleEcto.Connection do
       |> Enum.reduce([], fn ix, acc -> [Enum.at(params, ix - 1) | acc] end)
       |> Enum.reverse
 
-    case ordered_params do
+    ordered_params = case ordered_params do
       []  -> params
       _   -> ordered_params
     end
+
+    #IO.inspect ordered_params, label: "ordered_params"
+
+    ordered_params
   end
 
   defp sanitise_query(query) do
     query
     |> IO.iodata_to_binary
     |> String.replace(~r/(\?([0-9]+))(?=(?:[^\\"']|[\\"'][^\\"']*[\\"'])*$)/, "?")
+    #|> IO.inspect label: "sanitised_query"
   end
 
   defp is_erlang_odbc_no_data_found_bug?({:error, error}, statement) do

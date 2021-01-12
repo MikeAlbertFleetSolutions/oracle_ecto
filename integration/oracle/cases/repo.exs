@@ -1,7 +1,7 @@
 Code.require_file "../support/types.exs", __DIR__
 
 defmodule Ecto.Integration.RepoTest do
-  use Ecto.Integration.Case, async: Application.get_env(:ecto, :async_integration_tests, true)
+  use Ecto.Integration.Case, async: false #Application.get_env(:ecto, :async_integration_tests, true)
   @moduletag :integration
 
   alias Ecto.Integration.TestRepo
@@ -77,7 +77,7 @@ defmodule Ecto.Integration.RepoTest do
     assert CompositePk |> first |> TestRepo.one == c1
     assert CompositePk |> last |> TestRepo.one == c2
 
-    changeset = Ecto.Changeset.cast(c1, %{name: "first change"}, ~w(name))
+    changeset = Ecto.Changeset.cast(c1, %{name: "first change"}, ~w(name)a)
     c1 = TestRepo.update!(changeset)
     assert TestRepo.get_by!(CompositePk, %{a: 1, b: 2}) == c1
 
@@ -116,7 +116,7 @@ defmodule Ecto.Integration.RepoTest do
   test "insert and update with changeset" do
     # On insert we merge the fields and changes
     changeset = Ecto.Changeset.cast(%Post{id: 1, text: "x", title: "wrong"},
-                                    %{"title" => "hello", "temp" => "unknown"}, ~w(title temp))
+                                    %{"title" => "hello", "temp" => "unknown"}, ~w(title temp)a)
 
     post = TestRepo.insert!(changeset)
     assert %Post{text: "x", title: "hello", temp: "unknown"} = post
@@ -124,7 +124,7 @@ defmodule Ecto.Integration.RepoTest do
 
     # On update we merge only fields, direct schema changes are discarded
     changeset = Ecto.Changeset.cast(%{post | text: "y"},
-                                    %{"title" => "world", "temp" => "unknown"}, ~w(title temp))
+                                    %{title: "world", temp: "unknown"}, ~w(title temp)a)
 
     assert %Post{text: "y", title: "world", temp: "unknown"} = TestRepo.update!(changeset)
     assert %Post{text: "x", title: "world", temp: "temp"} = TestRepo.get!(Post, post.id)
@@ -132,12 +132,12 @@ defmodule Ecto.Integration.RepoTest do
 
   test "insert and update with empty changeset" do
     # On insert we merge the fields and changes
-    changeset = Ecto.Changeset.cast(%Permalink{id: 1}, %{}, ~w())
+    changeset = Ecto.Changeset.cast(%Permalink{id: 1}, %{}, [])
     assert %Permalink{} = permalink = TestRepo.insert!(changeset)
 
     # Assert we can update the same value twice,
     # without changes, without triggering stale errors.
-    changeset = Ecto.Changeset.cast(permalink, %{}, ~w())
+    changeset = Ecto.Changeset.cast(permalink, %{}, [])
     assert TestRepo.update!(changeset) == permalink
     assert TestRepo.update!(changeset) == permalink
   end
@@ -158,7 +158,7 @@ defmodule Ecto.Integration.RepoTest do
       end
     end
 
-    changeset = Ecto.Changeset.cast(struct(RAW, %{}), %{}, ~w())
+    changeset = Ecto.Changeset.cast(struct(RAW, %{}), %{}, []) |> IO.inspect(label: "cahiofhlaskj")
 
     # If the field is nil, we will not send it
     # and read the value back from the database.
@@ -168,7 +168,7 @@ defmodule Ecto.Integration.RepoTest do
     TestRepo.update_all from(u in RAW, where: u.id == ^cid), set: [lock_version: 11]
 
     # We will read back on update too
-    changeset = Ecto.Changeset.cast(raw, %{"text" => "0"}, ~w(text))
+    changeset = Ecto.Changeset.cast(raw, %{"text" => "0"}, ~w(text)a)
     assert %{id: ^cid, lock_version: 11, text: "0"} = TestRepo.update!(changeset)
   end
 
@@ -204,10 +204,10 @@ defmodule Ecto.Integration.RepoTest do
   @tag :assigns_id_type
   @tag :identity_insert
   test "insert and update with user-assigned primary key in changeset" do
-    changeset = Ecto.Changeset.cast(%Post{id: 11}, %{"id" => "13"}, ~w(id))
+    changeset = Ecto.Changeset.cast(%Post{id: 11}, %{"id" => "13"}, ~w(id)a)
     assert %Post{id: 13} = post = TestRepo.insert!(changeset)
 
-    changeset = Ecto.Changeset.cast(post, %{"id" => "15"}, ~w(id))
+    changeset = Ecto.Changeset.cast(post, %{"id" => "15"}, ~w(id)a)
     assert %Post{id: 15} = TestRepo.update!(changeset)
   end
 
@@ -229,7 +229,7 @@ defmodule Ecto.Integration.RepoTest do
 
     cs_ok =
       base_post
-      |> cast(%{"text" => "foo.bar"}, ~w(text))
+      |> cast(%{"text" => "foo.bar"}, ~w(text)a)
       |> optimistic_lock(:lock_version)
     TestRepo.update!(cs_ok)
 

@@ -32,6 +32,10 @@ defmodule OracleEcto.Helpers do
     |> upcase_name()
     |> wrap_in(quoter)
   end
+  def quote_name({name, _value} = name_tuple, quoter) when is_tuple(name_tuple) do
+    name
+    |> quote_name(quoter)
+  end
   def quote_name(name, quoter) do
     if String.contains?(name, "\"") do
       error!(nil, "bad name #{inspect name}")
