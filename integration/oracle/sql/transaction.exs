@@ -175,43 +175,44 @@ defmodule Ecto.Integration.TransactionTest do
   end
 
   ## Logging
+  #TODO: LogEntry is replaced with Telemetry
+  # Note: Ecto.LogEntry is currently soft-deprecated and will be hard-deprecated in 3.1.x. Instead you should use “Telemetry Events” (as documented in the Ecto.Repo docs)
+  # test "log begin, commit and rollback" do
+  #   Process.put(:on_log, &send(self(), &1))
+  #   PoolRepo.transaction(fn ->
+  #     assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
+  #     assert is_integer(entry.query_time) and entry.query_time >= 0
+  #     assert is_integer(entry.queue_time) and entry.queue_time >= 0
 
-  test "log begin, commit and rollback" do
-    Process.put(:on_log, &send(self(), &1))
-    PoolRepo.transaction(fn ->
-      assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
-      assert is_integer(entry.query_time) and entry.query_time >= 0
-      assert is_integer(entry.queue_time) and entry.queue_time >= 0
+  #     refute_received %Ecto.LogEntry{}
+  #     Process.put(:on_log, &send(self(), &1))
+  #   end)
 
-      refute_received %Ecto.LogEntry{}
-      Process.put(:on_log, &send(self(), &1))
-    end)
+  #   assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
+  #   assert is_integer(entry.query_time) and entry.query_time >= 0
+  #   assert is_nil(entry.queue_time)
 
-    assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
-    assert is_integer(entry.query_time) and entry.query_time >= 0
-    assert is_nil(entry.queue_time)
+  #   assert PoolRepo.transaction(fn ->
+  #     refute_received %Ecto.LogEntry{}
+  #     Process.put(:on_log, &send(self(), &1))
+  #     PoolRepo.rollback(:log_rollback)
+  #   end) == {:error, :log_rollback}
+  #   assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
+  #   assert is_integer(entry.query_time) and entry.query_time >= 0
+  #   assert is_nil(entry.queue_time)
+  # end
 
-    assert PoolRepo.transaction(fn ->
-      refute_received %Ecto.LogEntry{}
-      Process.put(:on_log, &send(self(), &1))
-      PoolRepo.rollback(:log_rollback)
-    end) == {:error, :log_rollback}
-    assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
-    assert is_integer(entry.query_time) and entry.query_time >= 0
-    assert is_nil(entry.queue_time)
-  end
+  # test "log queries inside transactions" do
+  #   PoolRepo.transaction(fn ->
+  #     Process.put(:on_log, &send(self(), &1))
+  #     assert [] = PoolRepo.all(Trans)
 
-  test "log queries inside transactions" do
-    PoolRepo.transaction(fn ->
-      Process.put(:on_log, &send(self(), &1))
-      assert [] = PoolRepo.all(Trans)
-
-      assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
-      assert is_integer(entry.query_time) and entry.query_time >= 0
-      assert is_integer(entry.decode_time) and entry.query_time >= 0
-      assert is_nil(entry.queue_time)
-    end)
-  end
+  #     assert_received %Ecto.LogEntry{params: [], result: {:ok, _}} = entry
+  #     assert is_integer(entry.query_time) and entry.query_time >= 0
+  #     assert is_integer(entry.decode_time) and entry.query_time >= 0
+  #     assert is_nil(entry.queue_time)
+  #   end)
+  # end
 
   @tag :strict_savepoint
   test "log raises after begin, drops transaction" do
@@ -226,19 +227,21 @@ defmodule Ecto.Integration.TransactionTest do
     catch_error(PoolRepo.query!("savepoint foobar"))
   end
 
-  test "log raises after begin, drops the whole transaction" do
-    try do
-      PoolRepo.transaction(fn ->
-        PoolRepo.insert!(%Trans{id: 8, text: "8"})
-        Process.put(:on_log, fn _ -> raise UniqueError end)
-        PoolRepo.transaction(fn -> flunk "log did not raise" end)
-      end)
-    rescue
-      UniqueError -> :ok
-    end
+  #TODO: LogEntry is replaced with Telemetry
+  # Note: Ecto.LogEntry is currently soft-deprecated and will be hard-deprecated in 3.1.x. Instead you should use “Telemetry Events” (as documented in the Ecto.Repo docs)
+  # test "log raises after begin, drops the whole transaction" do
+  #   try do
+  #     PoolRepo.transaction(fn ->
+  #       PoolRepo.insert!(%Trans{id: 8, text: "8"})
+  #       Process.put(:on_log, fn _ -> raise UniqueError end)
+  #       PoolRepo.transaction(fn -> flunk "log did not raise" end)
+  #     end)
+  #   rescue
+  #     UniqueError -> :ok
+  #   end
 
-    assert [] = PoolRepo.all(Trans)
-  end
+  #   assert [] = PoolRepo.all(Trans)
+  # end
 
   test "log raises after commit, does commit" do
     try do

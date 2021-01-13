@@ -264,13 +264,11 @@ defmodule OracleEcto.QueryString do
   end
 
   def expr({:datetime_add, _, [datetime, count, interval]}, sources, query) do
-    IO.inspect datetime, label: "datetime"
     ["CAST(DATEADD(", interval, ",", expr(count, sources, query),
       ",", expr(datetime, sources, query) | ") AS DATETIME)"]
   end
 
   def expr({:date_add, _, [date, count, interval]}, sources, query) do
-    IO.inspect date, label: "date"
     ["CAST(DATEADD(", interval, ",", expr(count, sources, query),
       ",", expr(date, sources, query) | ") AS DATE)"]
   end
