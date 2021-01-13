@@ -93,7 +93,8 @@ defmodule OracleEcto.Connection do
         else
           error
         end
-      {:error, error} -> {:error, error}
+      {:error, %Oracleex.Error{} = error} -> {:error, error}
+      {:error, error} -> {:error, Oracleex.Error.exception(error.message)}
     end
   end
 
