@@ -563,14 +563,14 @@ defmodule Ecto.Integration.AssocTest do
     refute Process.get(Comment)
   end
 
-  # # TODO: revisit
-  # # test "has_many assoc on delete does nothing" do
-  # #   user = TestRepo.insert!(%User{id: 1})
-  # #   TestRepo.insert!(%Post{id: 1, author_id: user.id})
+  # TODO: revisit
+  test "has_many assoc on delete does nothing" do
+    user = TestRepo.insert!(%User{id: 1})
+    TestRepo.insert!(%Post{id: 1, author_id: user.id})
 
-  # #   TestRepo.delete!(user)
-  # #   assert Enum.count(TestRepo.all(Post)) == 1
-  # # end
+    TestRepo.delete!(user)
+    assert Enum.count(TestRepo.all(Post)) == 1
+  end
 
   # test "many_to_many assoc on delete deletes all" do
   #   p1 = TestRepo.insert!(%Post{id: 1, title: "1", text: "hi"})

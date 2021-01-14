@@ -25,7 +25,7 @@ defmodule OracleEcto.Type do
     end
   end
 
-  def encode(value, type) do
+  def encode(value, _type) do
     {:ok, value}
   end
 

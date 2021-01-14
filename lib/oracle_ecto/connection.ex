@@ -1,6 +1,4 @@
 defmodule OracleEcto.Connection do
-  @behaviour Ecto.Adapter.SQL.Structure
-
   alias Oracleex.Query
   alias OracleEcto.Query, as: SQL
 
@@ -93,7 +91,6 @@ defmodule OracleEcto.Connection do
         else
           error
         end
-      {:error, %Oracleex.Error{} = error} -> {:error, error}
       {:error, error} -> {:error, Oracleex.Error.exception(error.message)}
     end
   end

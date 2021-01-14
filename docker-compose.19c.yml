@@ -17,6 +17,5 @@ services:
     image: mafs/oracle_ecto:oralce-19c
     volumes:
       - ${WORKSPACE}/oracle_ecto/:/app
-      # - ${WORKSPACE}/oracleex/:/oracleex
     depends_on:
       - db
