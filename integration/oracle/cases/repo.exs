@@ -625,16 +625,13 @@ defmodule Ecto.Integration.RepoTest do
     query = from Post, order_by: [asc: :visits]
     assert TestRepo.aggregate(query, :max, :visits) == 14
 
-    #TODO: use of aggregate with a query! We do not use!!!
     # With order_by and limit
-    #query = from Post, order_by: [asc: :visits], limit: 2
-    #x = TestRepo.aggregate(query, :count, :visits)
-    #IO.inspect x, label: "x"
-    # assert TestRepo.aggregate(query, :max, :visits) == 12
+    query = from Post, order_by: [asc: :visits], limit: 2
+    assert TestRepo.aggregate(query, :max, :visits) == 12
 
     # With distinct
-    # query = from Post, distinct: true
-    # assert TestRepo.aggregate(query, :count, :visits) == 3
+    query = from Post, distinct: true
+    assert TestRepo.aggregate(query, :count, :visits) == 3
   end
 
   # test "insert all" do

@@ -3,14 +3,9 @@ defmodule Elixir.Ecto.Integration.MigratorTest.Migration54 do
 
 
   def up do
-    update &[54|&1]
+    send :"test runs all migrations", {:up, 54}
   end
-
   def down do
-    update &List.delete(&1, 54)
-  end
-
-  defp update(fun) do
-    Process.put(:migrations, fun.(Process.get(:migrations) || []))
+    send :"test runs all migrations", {:down, 54}
   end
 end

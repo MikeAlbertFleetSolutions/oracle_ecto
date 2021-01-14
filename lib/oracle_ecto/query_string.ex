@@ -51,8 +51,12 @@ defmodule OracleEcto.QueryString do
      exprs}
   end
 
-  def from(%{from: from} = query, sources) do
-    {from, name} = Helpers.get_source(query, sources, 0, from)
+  def from(%{from: %{hints: [_ | _]}} = query, _sources) do
+    Helpers.error!(query, "table hints are not supported witin Oracleex")
+  end
+
+  def from(%{from: %{source: source}} = query, sources) do
+    {from, name} = Helpers.get_source(query, sources, 0, source)
     [" FROM ", from, " ", name]
   end
 
