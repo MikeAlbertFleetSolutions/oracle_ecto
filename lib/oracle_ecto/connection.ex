@@ -23,7 +23,6 @@ defmodule OracleEcto.Connection do
   @spec prepare_execute(connection :: DBConnection.t, name :: String.t, prepared, params :: [term], options :: Keyword.t) ::
   {:ok, query :: map, term} | {:error, Exception.t}
   def prepare_execute(conn, name, prepared_query, params, options) do
-    #IO.puts "prepare_execute"
     statement = sanitise_query(prepared_query)
     ordered_params = order_params(prepared_query, params)
 
@@ -48,7 +47,6 @@ defmodule OracleEcto.Connection do
   @spec execute(connection :: DBConnection.t, prepared_query :: cached, params :: [term], options :: Keyword.t) ::
             {:ok, term} | {:error | :reset, Exception.t}
   def execute(conn, %Query{} = query, params, options) do
-    #IO.puts "execute"
     ordered_params =
       query.statement
       |> IO.iodata_to_binary
@@ -75,7 +73,6 @@ defmodule OracleEcto.Connection do
   @spec query(connection :: DBConnection.t, query :: String.t, params :: [term], options :: Keyword.t) ::
   {:ok, term} | {:error, Exception.t}
   def query(conn, query, params, options) do
-    #IO.puts "query"
     ordered_params =
       query
       |> IO.iodata_to_binary
@@ -140,7 +137,7 @@ defmodule OracleEcto.Connection do
     query
     |> IO.iodata_to_binary
     |> String.replace(~r/(\?([0-9]+))(?=(?:[^\\"']|[\\"'][^\\"']*[\\"'])*$)/, "?")
-    #|> IO.inspect label: "sanitised_query"
+    #|> IO.inspect(label: "sanitised_query")
   end
 
   defp is_erlang_odbc_no_data_found_bug?({:error, error}, statement) do
@@ -191,8 +188,9 @@ defmodule OracleEcto.Connection do
     do: SQL.insert(prefix, table, header, rows, on_conflict, returning)
   def update(prefix, table, fields, filters, returning),
     do: SQL.update(prefix, table, fields, filters, returning)
-  def delete(prefix, table, filters, returning),
-    do: SQL.delete(prefix, table, filters, returning)
+  def delete(prefix, table, filters, returning) do
+    SQL.delete(prefix, table, filters, returning)
+  end
 
   ## Migration
   def execute_ddl(command) do

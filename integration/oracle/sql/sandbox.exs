@@ -8,6 +8,13 @@ defmodule Ecto.Integration.SandboxTest do
 
   import ExUnit.CaptureLog
 
+  test "include link to SQL sandbox on ownership errors" do
+    assert_raise DBConnection.OwnershipError,
+             ~r"cannot find ownership process", fn ->
+      TestRepo.all(Post)
+    end
+  end
+
   test "can use the repository when checked out" do
     assert_raise DBConnection.OwnershipError, ~r"cannot find ownership process", fn ->
       TestRepo.all(Post)
@@ -98,12 +105,12 @@ defmodule Ecto.Integration.SandboxTest do
   test "runs inside a sandbox even with failed queries" do
     Sandbox.checkout(TestRepo)
 
-    #{:ok, _}    = TestRepo.insert(%Post{id: 1}, skip_transaction: true)
+    {:ok, _}    = TestRepo.insert(%Post{id: 1}, skip_transaction: true)
 
     # This is a failed query but it should not taint the sandbox transaction
     {:error, _} = TestRepo.query("INVALID")
 
-    #{:ok, _}    = TestRepo.insert(%Post{id: 2}, skip_transaction: true)
+    {:ok, _}    = TestRepo.insert(%Post{id: 2}, skip_transaction: true)
 
     Sandbox.checkin(TestRepo)
   end
