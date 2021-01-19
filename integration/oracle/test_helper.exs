@@ -34,12 +34,6 @@ Code.require_file "./support/repo.exs", __DIR__
 Code.require_file "./support/schemas.exs", __DIR__
 Code.require_file "./support/migration.exs", __DIR__
 
-pool =
-  case System.get_env("ECTO_POOL") || "poolboy" do
-    "poolboy" -> DBConnection.Poolboy
-    "sbroker" -> DBConnection.Sojourn
-  end
-
 # Basic test repo
 alias Ecto.Integration.TestRepo
 
@@ -49,8 +43,7 @@ Application.put_env(:ecto, TestRepo,
   service: "db",
   username: "web_ca",
   password: "bitsandbobs",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  ownership_pool: pool)
+  pool: Ecto.Adapters.SQL.Sandbox)
 
 defmodule Ecto.Integration.TestRepo do
   use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto
@@ -84,8 +77,14 @@ end
 defmodule Ecto.Integration.Case do
   use ExUnit.CaseTemplate
 
-  setup do
+  setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(TestRepo)
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(TestRepo, {:shared, self()})
+    end
+
+    :ok
   end
 end
 
