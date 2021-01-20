@@ -528,24 +528,23 @@ defmodule Ecto.Integration.RepoTest do
   #   assert %Ecto.Changeset{} = changeset.changes.item
   # end
 
-  # TODO: revisit
-  # test "get(!)" do
-  #   post1 = TestRepo.insert!(%Post{id: 1, title: "1", text: "hai"})
-  #   post2 = TestRepo.insert!(%Post{id: 2, title: "2", text: "hai"})
+  test "get(!)" do
+    post1 = TestRepo.insert!(%Post{id: 1, title: "1", text: "hai"})
+    post2 = TestRepo.insert!(%Post{id: 2, title: "2", text: "hai"})
 
-  #   assert post1 == TestRepo.get(Post, post1.id)
-  #   assert post2 == TestRepo.get(Post, to_string post2.id) # With casting
+    assert post1 == TestRepo.get(Post, post1.id)
+    assert post2 == TestRepo.get(Post, to_string post2.id) # With casting
 
-  #   assert post1 == TestRepo.get!(Post, post1.id)
-  #   assert post2 == TestRepo.get!(Post, to_string post2.id) # With casting
+    assert post1 == TestRepo.get!(Post, post1.id)
+    assert post2 == TestRepo.get!(Post, to_string post2.id) # With casting
 
-  #   TestRepo.delete!(post1)
+    TestRepo.delete!(post1)
 
-  #   assert nil   == TestRepo.get(Post, post1.id)
-  #   assert_raise Ecto.NoResultsError, fn ->
-  #     TestRepo.get!(Post, post1.id)
-  #   end
-  # end
+    assert nil   == TestRepo.get(Post, post1.id)
+    assert_raise Ecto.NoResultsError, fn ->
+      TestRepo.get!(Post, post1.id)
+    end
+  end
 
   # test "get(!) with custom source" do
   #   custom = Ecto.put_meta(%Custom{}, source: "posts")

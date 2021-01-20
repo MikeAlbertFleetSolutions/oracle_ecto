@@ -563,7 +563,6 @@ defmodule Ecto.Integration.AssocTest do
     refute Process.get(Comment)
   end
 
-  # TODO: revisit
   test "has_many assoc on delete does nothing" do
     user = TestRepo.insert!(%User{id: 1})
     TestRepo.insert!(%Post{id: 1, author_id: user.id})
