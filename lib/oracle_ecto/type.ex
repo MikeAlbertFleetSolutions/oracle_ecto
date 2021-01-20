@@ -2,6 +2,8 @@ defmodule OracleEcto.Type do
   @int_types [:bigint, :integer, :id, :serial]
   @decimal_types [:numeric, :decimal]
 
+  @json_library Application.get_env(:oracle_ecto, :json_library, Jason)
+
   def encode(value, :bigint) do
     {:ok, to_string(value)}
   end
@@ -11,7 +13,7 @@ defmodule OracleEcto.Type do
   end
 
   def encode(value, :map) do
-    Poison.encode(value)
+    @json_library.encode(value)
   end
 
   def encode(value, :decimal) do
@@ -51,7 +53,7 @@ defmodule OracleEcto.Type do
   end
 
   def decode(value, :map) do
-    Poison.decode(value)
+    @json_library.decode(value)
   end
 
   def decode(value, :uuid) do
