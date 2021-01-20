@@ -88,6 +88,7 @@ defmodule Ecto.Integration.Case do
   end
 end
 
+{:ok, _} = OracleEcto.ensure_all_started(:ecto_sql, :temporary)
 {:ok, _} = OracleEcto.ensure_all_started(TestRepo, :temporary)
 
 # load up the repository, start it

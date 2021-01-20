@@ -1036,28 +1036,6 @@ defmodule Ecto.Integration.RepoTest do
     assert [post3] == (from Post, where: ^params3) |> TestRepo.all
   end
 
-  #TODO: LogEntry is replaced with Telemetry
-  # Note: Ecto.LogEntry is currently soft-deprecated and will be hard-deprecated in 3.1.x. Instead you should use “Telemetry Events” (as documented in the Ecto.Repo docs)
-  ## Logging
-  # test "log entry logged on query" do
-  #   log = fn entry ->
-  #     assert %Ecto.LogEntry{result: {:ok, _}} = entry
-  #     assert is_integer(entry.query_time) and entry.query_time >= 0
-  #     assert is_integer(entry.decode_time) and entry.query_time >= 0
-  #     assert is_integer(entry.queue_time) and entry.queue_time >= 0
-  #     send(self(), :logged)
-  #   end
-  #   Process.put(:on_log, log)
-
-  #   _ = TestRepo.all(Post)
-  #   assert_received :logged
-  # end
-
-  # test "log entry not logged when log is false" do
-  #   Process.put(:on_log, fn _ -> flunk("logged") end)
-  #   TestRepo.insert!(%Post{id: 1, title: "1"}, [log: false])
-  # end
-
   test "load" do
     inserted_at = ~N[2016-01-01 09:00:00]
     TestRepo.insert!(%Post{id: 1, title: "title1", inserted_at: inserted_at, public: 0})
