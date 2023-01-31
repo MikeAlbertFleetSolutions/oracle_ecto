@@ -51,7 +51,7 @@ variables to be set.  See the docker-compose file for details
 ### To start the database:
 
 ```bash
-docker-compose start db
+docker-compose up db
 ```
 
 ### To open a shell at the app root:
@@ -67,6 +67,26 @@ mix deps.get
 mix test
 ```
 
+## Testing against 19c
+
+### To start the database:
+
+```bash
+docker-compose -f docker-compose.19c.yml up db
+```
+
+### To open a shell at the app root:
+
+```bash
+docker-compose -f docker-compose.19c.yml run --rm oracle_ecto
+```
+
+### To run the unit tests:
+
+```bash
+mix deps.get
+mix test
+```
 
 ## Notes
 

@@ -10,7 +10,8 @@ defmodule Ecto.Integration.MigratorTest do
   alias Ecto.Integration.PoolRepo
   alias Ecto.Migration.SchemaMigration
 
-  setup do
+  setup config do
+    Process.register(self(), config.test)
     PoolRepo.delete_all(SchemaMigration)
     :ok
   end
@@ -62,10 +63,10 @@ defmodule Ecto.Integration.MigratorTest do
     assert catch_error(up(PoolRepo, 20100906120000, BadMigration, log: false))
   end
 
-  test "run up to/step migration" do
+  test "run up to/step migration", config do
     in_tmp fn path ->
-      create_migration(47)
-      create_migration(48)
+      create_migration(47, config)
+      create_migration(48, config)
 
       assert [47] = run(PoolRepo, path, :up, step: 1, log: false)
       assert count_entries() == 1
@@ -74,11 +75,11 @@ defmodule Ecto.Integration.MigratorTest do
     end
   end
 
-  test "run down to/step migration" do
+  test "run down to/step migration", config do
     in_tmp fn path ->
       migrations = [
-        create_migration(49),
-        create_migration(50),
+        create_migration(49, config),
+        create_migration(50, config),
       ]
 
       assert [49, 50] = run(PoolRepo, path, :up, all: true, log: false)
@@ -92,11 +93,11 @@ defmodule Ecto.Integration.MigratorTest do
     end
   end
 
-  test "runs all migrations" do
+  test "runs all migrations", config do
     in_tmp fn path ->
       migrations = [
-        create_migration(53),
-        create_migration(54),
+        create_migration(53, config),
+        create_migration(54, config),
       ]
 
       assert [53, 54] = run(PoolRepo, path, :up, all: true, log: false)
@@ -112,10 +113,10 @@ defmodule Ecto.Integration.MigratorTest do
   end
 
   defp count_entries() do
-    length Process.get(:migrations)
+    PoolRepo.aggregate(SchemaMigration, :count, :version)
   end
 
-  defp create_migration(num) do
+  defp create_migration(num, config) do
     module = Module.concat(__MODULE__, "Migration#{num}")
 
     File.write! "#{num}_migration_#{num}.exs", """
@@ -124,15 +125,10 @@ defmodule Ecto.Integration.MigratorTest do
 
 
       def up do
-        update &[#{num}|&1]
+        send #{inspect config.test}, {:up, #{inspect num}}
       end
-
       def down do
-        update &List.delete(&1, #{num})
-      end
-
-      defp update(fun) do
-        Process.put(:migrations, fun.(Process.get(:migrations) || []))
+        send #{inspect config.test}, {:down, #{inspect num}}
       end
     end
     """

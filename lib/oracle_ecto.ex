@@ -2,7 +2,7 @@ defmodule OracleEcto do
   @moduledoc false
   @behaviour Ecto.Adapter.Storage
 
-  use Ecto.Adapters.SQL, :oracleex
+  use Ecto.Adapters.SQL, driver: :oracleex, migration_lock: "FOR UPDATE"
 
   alias OracleEcto.Migration
   alias OracleEcto.Storage

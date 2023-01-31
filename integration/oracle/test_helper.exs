@@ -34,26 +34,19 @@ Code.require_file "./support/repo.exs", __DIR__
 Code.require_file "./support/schemas.exs", __DIR__
 Code.require_file "./support/migration.exs", __DIR__
 
-pool =
-  case System.get_env("ECTO_POOL") || "poolboy" do
-    "poolboy" -> DBConnection.Poolboy
-    "sbroker" -> DBConnection.Sojourn
-  end
-
 # Basic test repo
 alias Ecto.Integration.TestRepo
 
 Application.put_env(:ecto, TestRepo,
   adapter: OracleEcto,
-  dsn: "OracleODBC-12c",
+  dsn: "OracleODBC-19",
   service: "db",
   username: "web_ca",
   password: "bitsandbobs",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  ownership_pool: pool)
+  pool: Ecto.Adapters.SQL.Sandbox)
 
 defmodule Ecto.Integration.TestRepo do
-  use Ecto.Integration.Repo, otp_app: :ecto
+  use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto
 end
 
 # Pool repo for transaction and lock tests
@@ -61,7 +54,7 @@ alias Ecto.Integration.PoolRepo
 
 Application.put_env(:ecto, PoolRepo,
   adapter: OracleEcto,
-  dsn: "OracleODBC-12c",
+  dsn: "OracleODBC-19",
   service: "db",
   username: "web_ca",
   password: "bitsandbobs",
@@ -70,7 +63,7 @@ Application.put_env(:ecto, PoolRepo,
   max_seconds: 10)
 
 defmodule Ecto.Integration.PoolRepo do
-  use Ecto.Integration.Repo, otp_app: :ecto
+  use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto
 
   def create_prefix(prefix) do
    "create user #{prefix} identified by #{prefix}"
@@ -84,11 +77,18 @@ end
 defmodule Ecto.Integration.Case do
   use ExUnit.CaseTemplate
 
-  setup do
+  setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(TestRepo)
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(TestRepo, {:shared, self()})
+    end
+
+    :ok
   end
 end
 
+{:ok, _} = OracleEcto.ensure_all_started(:ecto_sql, :temporary)
 {:ok, _} = OracleEcto.ensure_all_started(TestRepo, :temporary)
 
 # load up the repository, start it

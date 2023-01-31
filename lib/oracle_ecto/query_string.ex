@@ -51,8 +51,12 @@ defmodule OracleEcto.QueryString do
      exprs}
   end
 
-  def from(%{from: from} = query, sources) do
-    {from, name} = Helpers.get_source(query, sources, 0, from)
+  def from(%{from: %{hints: [_ | _]}} = query, _sources) do
+    Helpers.error!(query, "table hints are not supported witin Oracleex")
+  end
+
+  def from(%{from: %{source: source}} = query, sources) do
+    {from, name} = Helpers.get_source(query, sources, 0, source)
     [" FROM ", from, " ", name]
   end
 
@@ -265,7 +269,7 @@ defmodule OracleEcto.QueryString do
 
   def expr({:datetime_add, _, [datetime, count, interval]}, sources, query) do
     ["CAST(DATEADD(", interval, ",", expr(count, sources, query),
-      ",", expr(datetime, sources, query) | ") AS DATETIME2)"]
+      ",", expr(datetime, sources, query) | ") AS DATETIME)"]
   end
 
   def expr({:date_add, _, [date, count, interval]}, sources, query) do
@@ -351,13 +355,13 @@ defmodule OracleEcto.QueryString do
   def create_names(prefix, sources, pos, limit) when pos < limit do
     current =
       case elem(sources, pos) do
-        {table, schema} ->
-          name = [String.first(table) | Integer.to_string(pos)]
-          {Helpers.quote_table(prefix, table), name, schema}
         {:fragment, _, _} ->
           {nil, [?f | Integer.to_string(pos)], nil}
         %Ecto.SubQuery{} ->
           {nil, [?s | Integer.to_string(pos)], nil}
+        {table, schema, _as_name} ->
+          name = [String.first(table) | Integer.to_string(pos)]
+          {Helpers.quote_table(prefix, table), name, schema}
       end
     [current | create_names(prefix, sources, pos + 1, limit)]
   end

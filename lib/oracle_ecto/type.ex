@@ -2,6 +2,8 @@ defmodule OracleEcto.Type do
   @int_types [:bigint, :integer, :id, :serial]
   @decimal_types [:numeric, :decimal]
 
+  @json_library Application.get_env(:oracle_ecto, :json_library, Jason)
+
   def encode(value, :bigint) do
     {:ok, to_string(value)}
   end
@@ -11,7 +13,7 @@ defmodule OracleEcto.Type do
   end
 
   def encode(value, :map) do
-    Poison.encode(value)
+    @json_library.encode(value)
   end
 
   def encode(value, :decimal) do
@@ -51,20 +53,19 @@ defmodule OracleEcto.Type do
   end
 
   def decode(value, :map) do
-    Poison.decode(value)
+    @json_library.decode(value)
   end
 
   def decode(value, :uuid) do
     Ecto.UUID.dump(value)
   end
 
-  def decode({date, {h, m, s}}, type)
-  when type in [:utc_datetime, :naive_datetime] do
-    {:ok, {date, {h, m, s, 0}}}
+  def decode(%NaiveDateTime{} = date_time, type) when type in [:utc_datetime, :naive_datetime] do
+    {:ok, date_time}
   end
 
-  def decode({date, {_h, _m, _s}}, type)
-  when type in [:date] do
+  def decode(%NaiveDateTime{} = date_time, type) when type in [:date] do
+    date = date_time |> NaiveDateTime.to_date()
     {:ok, date}
   end
 

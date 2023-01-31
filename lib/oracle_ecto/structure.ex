@@ -1,6 +1,7 @@
 defmodule OracleEcto.Structure do
   @behaviour Ecto.Adapter.Structure
 
+  @impl true
   def structure_dump(_default, _config) do
     #table = config[:migration_source] || "schema_migrations"
 
@@ -10,6 +11,7 @@ defmodule OracleEcto.Structure do
          # do: append_versions(table, versions, path)
   end
 
+  @impl true
   def structure_load(_default, _config) do
     #path = config[:dump_path] || Path.join(default, "structure.sql")
 

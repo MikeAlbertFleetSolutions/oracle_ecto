@@ -67,7 +67,44 @@ defmodule OracleEcto.Connection do
     end
   end
   def execute(conn, statement, params, options) do
-    execute(conn, %Query{name: "", statement: statement}, params, options)
+    execute(conn, build_query(statement), params, options)
+  end
+
+  @spec query(connection :: DBConnection.t, query :: String.t, params :: [term], options :: Keyword.t) ::
+  {:ok, term} | {:error, Exception.t}
+  def query(conn, query, params, options) do
+    ordered_params =
+      query
+      |> IO.iodata_to_binary
+      |> order_params(params)
+
+    query = build_query(query)
+
+    case DBConnection.prepare_execute(conn, query, ordered_params, options) do
+      {:ok, _query, result} -> {:ok, process_rows(result, options)}
+      {:error, %Oracleex.Error{}} = error ->
+        if is_erlang_odbc_no_data_found_bug?(error, query.statement) do
+          {:ok, %{num_rows: 0, rows: []}}
+        else
+          error
+        end
+      {:error, error} -> {:error, Oracleex.Error.exception(error.message)}
+    end
+  end
+
+  @spec ddl_logs(result :: term()) :: [
+    {Logger.level(), Logger.message(), Logger.metadata()}
+  ]
+  def ddl_logs(_), do: []
+
+  @spec table_exists_query(table :: String.t()) :: {iodata(), [term()]}
+  def table_exists_query(table) do
+    {"SELECT count(*) FROM user_tables WHERE table_name = :1 ", [table]}
+  end
+
+  defp build_query(query_statement, name \\ "") do
+    sanitised_query = sanitise_query(query_statement)
+    %Query{name: name, statement: sanitised_query}
   end
 
   defp order_params(query, params) do
@@ -86,16 +123,21 @@ defmodule OracleEcto.Connection do
       |> Enum.reduce([], fn ix, acc -> [Enum.at(params, ix - 1) | acc] end)
       |> Enum.reverse
 
-    case ordered_params do
+    ordered_params = case ordered_params do
       []  -> params
       _   -> ordered_params
     end
+
+    #IO.inspect ordered_params, label: "ordered_params"
+
+    ordered_params
   end
 
   defp sanitise_query(query) do
     query
     |> IO.iodata_to_binary
     |> String.replace(~r/(\?([0-9]+))(?=(?:[^\\"']|[\\"'][^\\"']*[\\"'])*$)/, "?")
+    #|> IO.inspect(label: "sanitised_query")
   end
 
   defp is_erlang_odbc_no_data_found_bug?({:error, error}, statement) do
@@ -146,8 +188,9 @@ defmodule OracleEcto.Connection do
     do: SQL.insert(prefix, table, header, rows, on_conflict, returning)
   def update(prefix, table, fields, filters, returning),
     do: SQL.update(prefix, table, fields, filters, returning)
-  def delete(prefix, table, filters, returning),
-    do: SQL.delete(prefix, table, filters, returning)
+  def delete(prefix, table, filters, returning) do
+    SQL.delete(prefix, table, filters, returning)
+  end
 
   ## Migration
   def execute_ddl(command) do
