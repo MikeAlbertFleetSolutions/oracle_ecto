@@ -42,7 +42,7 @@ defmodule OracleEcto.Type do
   def decode(value, type)
   when type in [:float] do
     cond do
-      Decimal.is_decimal(value) -> {:ok, Decimal.to_float(value)}
+      Decimal.decimal?(value) -> {:ok, Decimal.to_float(value)}
       true                    -> {:ok, value}
     end
   end

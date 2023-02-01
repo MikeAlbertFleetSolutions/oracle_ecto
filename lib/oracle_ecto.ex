@@ -22,6 +22,7 @@ defmodule OracleEcto do
   def loaders(ecto_type, type),       do: [&(decode(&1, ecto_type)), type]
 
   ## Migration
+  @impl true
   def supports_ddl_transaction?, do: Migration.supports_ddl_transaction?
 
   @impl true
