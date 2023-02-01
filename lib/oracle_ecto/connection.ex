@@ -184,7 +184,7 @@ defmodule OracleEcto.Connection do
   @doc false
   def delete_all(query), do: SQL.delete_all(query)
 
-  def insert(prefix, table, header, rows, on_conflict, returning),
+  def insert(prefix, table, header, rows, on_conflict, returning, _placeholders),
     do: SQL.insert(prefix, table, header, rows, on_conflict, returning)
   def update(prefix, table, fields, filters, returning),
     do: SQL.update(prefix, table, fields, filters, returning)

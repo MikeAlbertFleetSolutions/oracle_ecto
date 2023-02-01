@@ -22,4 +22,9 @@ defmodule OracleEcto.Structure do
     # end
   end
 
+  @impl true
+  def dump_cmd(_args, _opts, _config) do
+    raise "not implemented"
+  end
+
 end
