@@ -67,27 +67,6 @@ mix deps.get
 mix test
 ```
 
-## Testing against 19c
-
-### To start the database:
-
-```bash
-docker-compose -f docker-compose.19c.yml up db
-```
-
-### To open a shell at the app root:
-
-```bash
-docker-compose -f docker-compose.19c.yml run --rm oracle_ecto
-```
-
-### To run the unit tests:
-
-```bash
-mix deps.get
-mix test
-```
-
 ## Notes
 
 * I started down this project because we have a very large existing Oracle database that our apps need to leverage.  I tried to implement so this would be reusable by others regardless of their situation but sometimes fell back to just making it work for our use case in order to save time.

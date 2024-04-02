@@ -41,8 +41,28 @@ defmodule OracleEcto.Migration do
     ]]
     query
   end
+  def execute_ddl({:drop, %Table{} = table, _opts}) do
+    query = [[
+      "DROP TABLE ",
+      quote_table(nil, table.name)
+    ]]
+    query
+  end
 
   def execute_ddl({:drop_if_exists, %Table{} = table}) do
+    query = [[
+      "DECLARE v_exists INTEGER; ",
+      "BEGIN ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_TABLES WHERE TABLE_NAME = '#{upcase_name(table.name)}'; ",
+      "IF v_exists = 0 THEN ",
+        "EXECUTE IMMEDIATE '",
+        execute_ddl({:drop, table}),
+      "'; END IF; ",
+      "END;"
+    ]]
+    query
+  end
+  def execute_ddl({:drop_if_exists, %Table{} = table, _opt}) do
     query = [[
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
@@ -94,8 +114,26 @@ defmodule OracleEcto.Migration do
     [["DROP INDEX ",
       quote_name(index.name)]]
   end
+  def execute_ddl({:drop, %Index{} = index, _opt}) do
+    [["DROP INDEX ",
+      quote_name(index.name)]]
+  end
 
   def execute_ddl({:drop_if_exists, %Index{} = index}) do
+    query = [[
+      "DECLARE v_exists INTEGER; ",
+      "BEGIN ",
+      "SELECT COUNT(1) INTO v_exists FROM ALL_INDEXES WHERE INDEX_NAME = '#{upcase_name(index.name)}' AND TABLE_NAME = '#{upcase_name(index.table)}'; ",
+      "IF v_exists = 0 THEN ",
+        "EXECUTE IMMEDIATE '",
+        execute_ddl({:drop, index}),
+      "'; END IF; ",
+      "END;"
+    ]]
+    query
+  end
+
+  def execute_ddl({:drop_if_exists, %Index{} = index, _opt}) do
     query = [[
       "DECLARE v_exists INTEGER; ",
       "BEGIN ",
@@ -123,6 +161,10 @@ defmodule OracleEcto.Migration do
   end
 
   def execute_ddl({:drop, %Constraint{} = constraint}) do
+    [["ALTER TABLE ", quote_table(constraint.prefix, constraint.table),
+      " DROP CONSTRAINT ", quote_name(constraint.name)]]
+  end
+  def execute_ddl({:drop, %Constraint{} = constraint, _opt}) do
     [["ALTER TABLE ", quote_table(constraint.prefix, constraint.table),
       " DROP CONSTRAINT ", quote_name(constraint.name)]]
   end

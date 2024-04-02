@@ -4,7 +4,7 @@ defmodule OracleEcto.Mixfile do
   def project do
     [
       app: :oracle_ecto,
-      version: "0.1.0",
+      version: "0.2.0",
       description: "Ecto Adapter for Oracle. Using Oracleex.",
       elixir: ">= 1.4.0",
       build_embedded: Mix.env == :prod,
@@ -20,9 +20,9 @@ defmodule OracleEcto.Mixfile do
 
   defp deps do
     [
-     {:ecto_sql, "~> 3.1.0"},
-     {:oracleex, github: "MikeAlbertFleetSolutions/oracleex"},
-     {:jason, "~> 1.0"}
+     {:ecto_sql, "~> 3.9"},
+     {:oracleex, github: "MikeAlbertFleetSolutions/oracleex", branch: "upgrade/db_connect_2_4"},
+     {:jason, "~> 1.2"}
    ]
   end
 end

@@ -165,8 +165,8 @@ defmodule OracleEcto.Connection do
   Must return an empty list if the error does not come
   from any constraint.
   """
-  @spec to_constraints(exception :: Exception.t) :: Keyword.t
-  def to_constraints(%Oracleex.Error{} = error), do: error.constraint_violations
+  @spec to_constraints(exception :: Exception.t, opts :: Keyword.t) :: Keyword.t
+  def to_constraints(%Oracleex.Error{} = error, _opts), do: error.constraint_violations
 
   @doc """
   Returns a stream that prepares and executes the given query with
@@ -184,7 +184,7 @@ defmodule OracleEcto.Connection do
   @doc false
   def delete_all(query), do: SQL.delete_all(query)
 
-  def insert(prefix, table, header, rows, on_conflict, returning),
+  def insert(prefix, table, header, rows, on_conflict, returning, _placeholders),
     do: SQL.insert(prefix, table, header, rows, on_conflict, returning)
   def update(prefix, table, fields, filters, returning),
     do: SQL.update(prefix, table, fields, filters, returning)

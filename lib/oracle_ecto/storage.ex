@@ -2,7 +2,6 @@ defmodule OracleEcto.Storage do
 
   @behaviour Ecto.Adapter.Storage
 
-  @impl true
   def storage_up(_opts) do
     # database = Keyword.fetch!(opts, :database) || raise ":database is nil in repository configuration"
     # opts     = Keyword.put(opts, :database, nil)
@@ -21,7 +20,6 @@ defmodule OracleEcto.Storage do
     :ok
   end
 
-  @impl true
   def storage_down(_opts) do
     # database = Keyword.fetch!(opts, :database) || raise ":database is nil in repository configuration"
     # command  = ~s[DROP USER "#{database}" CASCADE]
@@ -36,6 +34,10 @@ defmodule OracleEcto.Storage do
     #     {:error, Exception.message(error)}
     # end
     :ok
+  end
+
+  def storage_status(_opts) do
+    :up
   end
 
 end
