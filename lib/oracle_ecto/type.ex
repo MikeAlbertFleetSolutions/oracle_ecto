@@ -1,4 +1,5 @@
 defmodule OracleEcto.Type do
+  require Decimal
   @int_types [:bigint, :integer, :id, :serial]
   @decimal_types [:numeric, :decimal]
 
@@ -42,7 +43,7 @@ defmodule OracleEcto.Type do
   def decode(value, type)
   when type in [:float] do
     cond do
-      Decimal.decimal?(value) -> {:ok, Decimal.to_float(value)}
+      Decimal.is_decimal(value) -> {:ok, Decimal.to_float(value)}
       true                    -> {:ok, value}
     end
   end
