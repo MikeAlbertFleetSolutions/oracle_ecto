@@ -2,7 +2,9 @@ defmodule OracleEcto.Type do
   @int_types [:bigint, :integer, :id, :serial]
   @decimal_types [:numeric, :decimal]
 
-  @json_library Application.get_env(:oracle_ecto, :json_library, Jason)
+  @json_library Application.compile_env(:oracle_ecto, :json_library, Jason)
+
+  require Decimal
 
   def encode(value, :bigint) do
     {:ok, to_string(value)}
@@ -42,7 +44,7 @@ defmodule OracleEcto.Type do
   def decode(value, type)
   when type in [:float] do
     cond do
-      Decimal.decimal?(value) -> {:ok, Decimal.to_float(value)}
+      Decimal.is_decimal(value) -> {:ok, Decimal.to_float(value)}
       true                    -> {:ok, value}
     end
   end
@@ -50,6 +52,10 @@ defmodule OracleEcto.Type do
   def decode(value, type)
   when type in @decimal_types and is_binary(value) do
     Decimal.parse(value)
+  end
+
+  def decode(nil, _type) do
+    {:ok, nil}
   end
 
   def decode(value, :map) do

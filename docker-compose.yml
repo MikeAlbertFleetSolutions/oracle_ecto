@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mafs/oracle_ecto:oralce-19c
+    # image: mafs/oracle_ecto:oralce-19c
     volumes:
       - ${WORKSPACE}/oracle_ecto/:/app
     depends_on:

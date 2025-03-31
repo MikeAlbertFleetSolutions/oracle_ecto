@@ -1,7 +1,7 @@
 defmodule OracleEcto.QueryString do
 
   alias Ecto.Query
-  alias Ecto.Query.{BooleanExpr, JoinExpr, QueryExpr}
+  alias Ecto.Query.{BooleanExpr, ByExpr, JoinExpr, LimitExpr, QueryExpr}
   alias OracleEcto.Connection
   alias OracleEcto.Helpers
 
@@ -22,7 +22,7 @@ defmodule OracleEcto.QueryString do
     ["SELECT", select_distinct, ?\s | select_fields(fields, sources, query)]
   end
 
-  def top(%Query{offset: nil, limit: %QueryExpr{expr: expr}} = query, sources) do
+  def top(%Query{offset: nil, limit: %LimitExpr{expr: expr}} = query, sources) do
     [" FETCH FIRST ", expr(expr, sources, query), " ROWS ONLY"]
   end
 
@@ -42,10 +42,10 @@ defmodule OracleEcto.QueryString do
   end
 
   def distinct(nil, _, _), do: {[], []}
-  def distinct(%QueryExpr{expr: []}, _, _), do: {[], []}
-  def distinct(%QueryExpr{expr: true}, _, _), do: {" DISTINCT", []}
-  def distinct(%QueryExpr{expr: false}, _, _), do: {[], []}
-  def distinct(%QueryExpr{expr: exprs}, sources, query) do
+  def distinct(%ByExpr{expr: []}, _, _), do: {[], []}
+  def distinct(%ByExpr{expr: true}, _, _), do: {" DISTINCT", []}
+  def distinct(%ByExpr{expr: false}, _, _), do: {[], []}
+  def distinct(%ByExpr{expr: exprs}, sources, query) do
     {[" DISTINCT ON (",
       Helpers.intersperse_map(exprs, ", ", fn {_, expr} -> expr(expr, sources, query) end), ?)],
      exprs}
@@ -159,10 +159,10 @@ defmodule OracleEcto.QueryString do
   end
 
   def offset(%Query{offset: nil, limit: nil}, _sources), do: []
-  def offset(%Query{offset: nil, limit: %QueryExpr{expr: _expr}} = _query, _sources) do
+  def offset(%Query{offset: nil, limit: %LimitExpr{expr: _expr}} = _query, _sources) do
     []
   end
-  def offset(%Query{offset: %QueryExpr{expr: offset_expr}, limit: %QueryExpr{expr: limit_expr}} = query, sources) do
+  def offset(%Query{offset: %QueryExpr{expr: offset_expr}, limit: %LimitExpr{expr: limit_expr}} = query, sources) do
     [" OFFSET ", expr(offset_expr, sources, query), " ROWS FETCH NEXT ", expr(limit_expr, sources, query), " ROWS ONLY"]
   end
   def offset(%Query{offset: %QueryExpr{expr: expr}} = query, sources) do

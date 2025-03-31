@@ -60,7 +60,8 @@ Application.put_env(:ecto, PoolRepo,
   password: "bitsandbobs",
   pool_size: 10,
   max_restarts: 20,
-  max_seconds: 10)
+  max_seconds: 10,
+  migration_cast_version_column: true)
 
 defmodule Ecto.Integration.PoolRepo do
   use Ecto.Integration.Repo, otp_app: :ecto, adapter: OracleEcto

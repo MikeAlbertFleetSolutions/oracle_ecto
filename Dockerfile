@@ -1,15 +1,15 @@
-FROM elixir:1.13.4
-
 # set Locale to en_US.UTF-8
+ARG ELIXIR_VERSION=1.18.3
+ARG OTP_VERSION=25.3.2.18
+ARG DEBIAN_VERSION=bookworm-20250317-slim
+
+ARG IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+
+FROM ${IMAGE}
+
 ENV DEBIAN_FRONTEND noninteractive
-ENV ERLANG_VER=1:25.0.4-1
 
-RUN wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb
-RUN dpkg -i erlang-solutions_2.0_all.deb
-
-RUN apt-get update && apt-get install -y locales unzip vim unixodbc-dev libaio1 \
-    erlang-base=$ERLANG_VER \
-    erlang-odbc=$ERLANG_VER
+RUN apt-get update && apt-get install -y locales unzip vim git unixodbc-dev libaio1
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen en_US.UTF-8 && \

@@ -1,5 +1,5 @@
 defmodule Ecto.Integration.PreloadTest do
-  use Ecto.Integration.Case, async: Application.get_env(:ecto, :async_integration_tests, true)
+  use Ecto.Integration.Case, async: Application.compile_env(:ecto, :async_integration_tests, true)
   @moduletag :integration
 
   alias Ecto.Integration.TestRepo
@@ -9,7 +9,7 @@ defmodule Ecto.Integration.PreloadTest do
   alias Ecto.Integration.Comment
   alias Ecto.Integration.Permalink
   alias Ecto.Integration.User
- 
+
   test "preload has_many" do
     p1 = TestRepo.insert!(%Post{id: 1, title: "1"})
     p2 = TestRepo.insert!(%Post{id: 2, title: "2"})
