@@ -138,7 +138,7 @@ defmodule OracleEcto.QueryString do
   def group_by(%Query{group_bys: group_bys} = query, sources) do
     [" GROUP BY " |
      Helpers.intersperse_map(group_bys, ", ", fn
-       %QueryExpr{expr: expr} ->
+       %ByExpr{expr: expr} ->
          Helpers.intersperse_map(expr, ", ", &expr(&1, sources, query))
      end)]
   end
