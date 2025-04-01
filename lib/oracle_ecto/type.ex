@@ -51,7 +51,7 @@ defmodule OracleEcto.Type do
 
   def decode(value, type)
   when type in @decimal_types and is_binary(value) do
-    Decimal.parse(value)
+    Decimal.cast(value)
   end
 
   def decode(nil, _type) do
